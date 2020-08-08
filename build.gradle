@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+}
+
+group 'pers.defoliation'
+version '1'
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        include 'plugin.yml'
+        expand 'version': "${releaseTime()}.${project.version}"
+    }
+}
+
+jar {
+    setArchiveName(
+            "${getArchivesBaseName()}-${releaseTime()}.${project.version}.jar"
+    )
+}
+
+def releaseTime() {
+    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+}
+
+
+repositories {
+    mavenCentral()
+    maven { url "http://ptms.ink:8081/repository/codemc-nms/" }
+    maven { url "http://ptms.ink:8081/repository/maven-releases/" }
+
+}
+
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile(group: "org.bukkit", name: "craftbukkit", version: "1.12.2-R0.1-SNAPSHOT")
+}
