@@ -13,6 +13,8 @@ public class StateManager {
 
     private static Map<Class, Map<String, List<InstanceWrapper>>> enumMap = new HashMap<>();
 
+    private static List<Object> removeValue = new ArrayList<>();
+
     static {
         Bukkit.getScheduler().runTaskTimer(MiniGame.INSTANCE, () -> {
             for (Map.Entry<Class, Map<String, List<InstanceWrapper>>> classMapEntry : enumMap.entrySet()) {
@@ -21,8 +23,9 @@ public class StateManager {
                     if (stringListEntry.getValue().isEmpty())
                         continue;
                     String methodName = getMethodName(stringListEntry.getKey());
-                    List<Object> removeValue = new ArrayList<>();
                     for (InstanceWrapper instanceWrapper : stringListEntry.getValue()) {
+                        if (removeValue.contains(instanceWrapper.instance))
+                            continue;
                         Object result = null;
                         if (instanceWrapper.needTime.get(methodName)) {
                             try {
@@ -53,6 +56,7 @@ public class StateManager {
                         }
                     }
                     stringListEntry.getValue().removeAll(removeValue);
+                    removeValue.clear();
                 }
                 for (Map.Entry<String, InstanceWrapper> stringObjectEntry : moveMap.entrySet()) {
                     classMapEntry.getValue().get(stringObjectEntry.getKey()).add(stringObjectEntry.getValue());
@@ -115,6 +119,10 @@ public class StateManager {
         if (instanceCheck(enumClass, instance)) {
             enumMap.get(enumClass).get(getKey(defaultEnum)).add(new InstanceWrapper(defaultEnum, instance));
         }
+    }
+
+    public static void removeInstance(Object instance) {
+        removeValue.add(instance);
     }
 
     private static boolean instanceCheck(Class<? extends Enum> enumClass, Object instance) {
