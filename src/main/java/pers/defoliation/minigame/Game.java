@@ -4,7 +4,7 @@ public interface Game {
 
     GameState preparing();
 
-    GameState waiting();
+    GameState waiting(int time);
 
     GameState running();
 

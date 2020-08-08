@@ -11,37 +11,58 @@ import java.util.Map;
 
 public class StateManager {
 
-    private static final Object[] nullObject = new Object[0];
-
-    private static Map<Class, Map<String, List<Object>>> enumMap = new HashMap<>();
+    private static Map<Class, Map<String, List<InstanceWrapper>>> enumMap = new HashMap<>();
 
     static {
         Bukkit.getScheduler().runTaskTimer(MiniGame.INSTANCE, () -> {
-            for (Map.Entry<Class, Map<String, List<Object>>> classMapEntry : enumMap.entrySet()) {
-                Map<String, Object> moveMap = new HashMap<>();
-                for (Map.Entry<String, List<Object>> stringListEntry : classMapEntry.getValue().entrySet()) {
+            for (Map.Entry<Class, Map<String, List<InstanceWrapper>>> classMapEntry : enumMap.entrySet()) {
+                Map<String, InstanceWrapper> moveMap = new HashMap<>();
+                for (Map.Entry<String, List<InstanceWrapper>> stringListEntry : classMapEntry.getValue().entrySet()) {
                     if (stringListEntry.getValue().isEmpty())
                         continue;
                     String methodName = getMethodName(stringListEntry.getKey());
                     List<Object> removeValue = new ArrayList<>();
-                    for (Object o : stringListEntry.getValue()) {
-                        try {
-                            Object invoke = o.getClass().getMethod(methodName).invoke(o, nullObject);
-                            Enum anEnum = (Enum) invoke;
-                            if (!anEnum.name().equals(stringListEntry.getKey())) {
-                                removeValue.add(o);
-                                moveMap.put(anEnum.getClass().getName() + "-" + anEnum.name(), o);
+                    for (InstanceWrapper instanceWrapper : stringListEntry.getValue()) {
+                        Object result = null;
+                        if (instanceWrapper.needTime.get(methodName)) {
+                            try {
+                                result = instanceWrapper.methodMap.get(methodName).invoke(instanceWrapper.instance, instanceWrapper.runTime);
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            } catch (InvocationTargetException e) {
+                                e.printStackTrace();
                             }
-                        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace();
+                        } else {
+                            try {
+                                result = instanceWrapper.methodMap.get(methodName).invoke(instanceWrapper.instance);
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            } catch (InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        instanceWrapper.runTime++;
+
+                        if (result == null)
+                            continue;
+                        Enum anEnum = (Enum) result;
+                        if (!getKey(anEnum).equals(stringListEntry.getKey())) {
+                            removeValue.add(instanceWrapper);
+                            moveMap.put(getKey(anEnum), instanceWrapper);
                         }
                     }
+                    stringListEntry.getValue().removeAll(removeValue);
                 }
-                for (Map.Entry<String, Object> stringObjectEntry : moveMap.entrySet()) {
+                for (Map.Entry<String, InstanceWrapper> stringObjectEntry : moveMap.entrySet()) {
                     classMapEntry.getValue().get(stringObjectEntry.getKey()).add(stringObjectEntry.getValue());
                 }
             }
         }, 1, 1);
+    }
+
+    private static String getKey(Enum anEnum) {
+        return anEnum.getClass().getName() + "-" + anEnum.name();
     }
 
     private static HashMap<String, String> methodCacheName = new HashMap<>();
@@ -74,27 +95,29 @@ public class StateManager {
         return stringBuilder.toString();
     }
 
-    public static void create(Class<Enum> enumClass) {
+    public static void create(Enum anEnum) {
+        Class<? extends Enum> enumClass = anEnum.getClass();
         if (enumMap.containsKey(enumClass)) {
             throw new RuntimeException(enumClass + " already exist");
         }
-        HashMap<String, List<Object>> map = new HashMap<>();
+        HashMap<String, List<InstanceWrapper>> map = new HashMap<>();
         enumMap.put(enumClass, map);
 
         Enum[] enumConstants = enumClass.getEnumConstants();
 
         for (Enum enumConstant : enumConstants) {
-            map.put(enumConstant.getClass().getName() + "-" + enumConstant.name(), new ArrayList<>());
+            map.put(getKey(enumConstant), new ArrayList<>());
         }
     }
 
-    public static void addInstance(Class<Enum> enumClass, Enum defaultEnum, Object instance) {
+    public static void addInstance(Enum defaultEnum, Object instance) {
+        Class<? extends Enum> enumClass = defaultEnum.getClass();
         if (instanceCheck(enumClass, instance)) {
-            enumMap.get(enumClass).get(enumClass.getName() + "-" + defaultEnum.name()).add(instance);
+            enumMap.get(enumClass).get(getKey(defaultEnum)).add(new InstanceWrapper(defaultEnum, instance));
         }
     }
 
-    private static boolean instanceCheck(Class<Enum> enumClass, Object instance) {
+    private static boolean instanceCheck(Class<? extends Enum> enumClass, Object instance) {
         Class<?> instanceClass = instance.getClass();
         for (Enum enumConstant : enumClass.getEnumConstants()) {
             String methodName = getMethodName(enumClass.getName() + "-" + enumConstant.name());
@@ -104,13 +127,64 @@ public class StateManager {
                     throw new IllegalArgumentException(enumClass.getName() + "." + method.getName() + " must return " + enumClass.getName());
                 }
             } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } finally {
-                return false;
+                try {
+                    Method method = instanceClass.getMethod(methodName, int.class);
+                    if (!method.getReturnType().equals(enumClass)) {
+                        throw new IllegalArgumentException(enumClass.getName() + "." + method.getName() + " must return " + enumClass.getName());
+                    }
+                } catch (NoSuchMethodException noSuchMethodException) {
+                    try {
+                        Method method = instanceClass.getMethod(methodName, Integer.class);
+                        if (!method.getReturnType().equals(enumClass)) {
+                            throw new IllegalArgumentException(enumClass.getName() + "." + method.getName() + " must return " + enumClass.getName());
+                        }
+                    } catch (NoSuchMethodException suchMethodException) {
+                        suchMethodException.printStackTrace();
+                        return false;
+                    }
+                }
             }
         }
         return true;
     }
 
+    public static void init() {
+    }
+
+
+    private static class InstanceWrapper {
+
+        Object instance;
+        Map<String, Method> methodMap = new HashMap<>();
+        Map<String, Boolean> needTime = new HashMap<>();
+        int runTime = 0;
+
+        public InstanceWrapper(Enum anEnum, Object instance) {
+            this.instance = instance;
+            Class<?> aClass = instance.getClass();
+            for (Enum enumConstant : anEnum.getClass().getEnumConstants()) {
+                String methodName = getMethodName(getKey(enumConstant));
+                try {
+                    Method method = aClass.getMethod(methodName);
+                    methodMap.put(methodName, method);
+                    needTime.put(methodName, false);
+                } catch (NoSuchMethodException e) {
+                    try {
+                        Method method = aClass.getMethod(methodName, int.class);
+                        methodMap.put(methodName, method);
+                        needTime.put(methodName, true);
+                    } catch (NoSuchMethodException noSuchMethodException) {
+                        try {
+                            Method method = aClass.getMethod(methodName, Integer.class);
+                            methodMap.put(methodName, method);
+                            needTime.put(methodName, true);
+                        } catch (NoSuchMethodException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 }
