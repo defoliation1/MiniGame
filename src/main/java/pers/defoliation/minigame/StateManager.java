@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class StateManager {
 
@@ -45,7 +46,7 @@ public class StateManager {
                             }
                         }
 
-                        instanceWrapper.runTime++;
+                        instanceWrapper.runTime.incrementAndGet();
 
                         if (result == null)
                             continue;
@@ -136,20 +137,13 @@ public class StateManager {
                 }
             } catch (NoSuchMethodException e) {
                 try {
-                    Method method = instanceClass.getMethod(methodName, int.class);
+                    Method method = instanceClass.getMethod(methodName, AtomicInteger.class);
                     if (!method.getReturnType().equals(enumClass)) {
                         throw new IllegalArgumentException(enumClass.getName() + "." + method.getName() + " must return " + enumClass.getName());
                     }
                 } catch (NoSuchMethodException noSuchMethodException) {
-                    try {
-                        Method method = instanceClass.getMethod(methodName, Integer.class);
-                        if (!method.getReturnType().equals(enumClass)) {
-                            throw new IllegalArgumentException(enumClass.getName() + "." + method.getName() + " must return " + enumClass.getName());
-                        }
-                    } catch (NoSuchMethodException suchMethodException) {
-                        suchMethodException.printStackTrace();
-                        return false;
-                    }
+                    noSuchMethodException.printStackTrace();
+                    return false;
                 }
             }
         }
@@ -165,7 +159,7 @@ public class StateManager {
         Object instance;
         Map<String, Method> methodMap = new HashMap<>();
         Map<String, Boolean> needTime = new HashMap<>();
-        int runTime = 0;
+        AtomicInteger runTime = new AtomicInteger();
 
         public InstanceWrapper(Enum anEnum, Object instance) {
             this.instance = instance;
@@ -178,17 +172,11 @@ public class StateManager {
                     needTime.put(methodName, false);
                 } catch (NoSuchMethodException e) {
                     try {
-                        Method method = aClass.getMethod(methodName, int.class);
+                        Method method = aClass.getMethod(methodName, AtomicInteger.class);
                         methodMap.put(methodName, method);
                         needTime.put(methodName, true);
                     } catch (NoSuchMethodException noSuchMethodException) {
-                        try {
-                            Method method = aClass.getMethod(methodName, Integer.class);
-                            methodMap.put(methodName, method);
-                            needTime.put(methodName, true);
-                        } catch (NoSuchMethodException e1) {
-                            e1.printStackTrace();
-                        }
+                        noSuchMethodException.printStackTrace();
                     }
                 }
             }
