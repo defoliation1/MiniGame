@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'pers.defoliation'
-version '1'
+version releaseTime()+'.1'
 
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
@@ -19,12 +19,12 @@ processResources {
 
 jar {
     setArchiveName(
-            "${getArchivesBaseName()}-${releaseTime()}.${project.version}.jar"
+            "${getArchivesBaseName()}-${project.version}.jar"
     )
 }
 
 def releaseTime() {
-    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+    return new Date().format("yyyy.MM.dd", TimeZone.getTimeZone("UTC"))
 }
 
 
@@ -32,7 +32,6 @@ repositories {
     mavenCentral()
     maven { url "http://ptms.ink:8081/repository/codemc-nms/" }
     maven { url "http://ptms.ink:8081/repository/maven-releases/" }
-
 }
 
 

@@ -5,7 +5,7 @@ import pers.defoliation.minigame.player.GamePlayer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Team {
+public abstract class Team {
 
     private int maxPlayer;
     private List<GamePlayer> players = new ArrayList<>();

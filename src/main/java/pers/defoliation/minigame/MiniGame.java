@@ -17,6 +17,5 @@ public class MiniGame extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new SpectateListener(),this);
         StateManager.init();
         StateManager.create(GameState.ENDED);
-        Bukkit.getScheduler().runTask(this,()-> StateManager.addInstance(GameState.PREPARING,new TestGame()));
     }
 }
