@@ -28,6 +28,10 @@ public abstract class GamePlayerGroup {
         return teamPlayers;
     }
 
+    public void addTeam(Team team){
+        this.teams.add(team);
+    }
+
     public static GamePlayerGroup getGroup(boolean teamBalance){
         return new TeamBalanceGroup();
     }
