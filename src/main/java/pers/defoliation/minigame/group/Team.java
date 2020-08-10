@@ -1,5 +1,6 @@
 package pers.defoliation.minigame.group;
 
+import org.bukkit.entity.Player;
 import pers.defoliation.minigame.player.GamePlayer;
 
 import java.util.ArrayList;
@@ -56,6 +57,26 @@ public abstract class Team {
                 return true;
         }
         return false;
+    }
+
+    public List<Player> getAlivePlayers(){
+        ArrayList<Player> players = new ArrayList<>();
+        for (GamePlayer player : this.players) {
+            if(player.isOnline()&&!player.isSpectator()){
+                players.add(player.getPlayer());
+            }
+        }
+        return players;
+    }
+
+    public int getAlivePlayerNum(){
+        int i = 0;
+        for (GamePlayer player : this.players) {
+            if(player.isOnline()&&!player.isSpectator()){
+                i++;
+            }
+        }
+        return i;
     }
 
 }

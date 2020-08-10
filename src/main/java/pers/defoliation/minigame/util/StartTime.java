@@ -2,18 +2,18 @@ package pers.defoliation.minigame.util;
 
 import pers.defoliation.minigame.group.GamePlayerGroup;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
-/**
- * 时间以tick计
- */
 public class StartTime {
 
     private int countdown = Integer.MAX_VALUE;
     private Supplier<Integer> countdownTime;
     private Supplier<Boolean> canCountdown;
     private Runnable whenStart;
+    private Consumer<Integer> secondConsumer;
+    private int tick;
 
     public StartTime(Supplier<Integer> countdownTime, Supplier<Boolean> canCountdown, Runnable whenStart) {
         this.countdownTime = countdownTime;
@@ -26,6 +26,17 @@ public class StartTime {
     }
 
     public void tick() {
+        tick++;
+        if (tick % 20 == 0) {
+            second();
+        }
+    }
+
+    public void setSecondConsumer(Consumer<Integer> secondConsumer) {
+        this.secondConsumer = secondConsumer;
+    }
+
+    public void second() {
         int countdownTime = this.countdownTime.get();
         if (canCountdown.get()) {
             countdown--;
@@ -35,6 +46,9 @@ public class StartTime {
                 whenStart.run();
         } else {
             countdown = countdownTime;
+        }
+        if (secondConsumer != null) {
+            secondConsumer.accept(countdown);
         }
     }
 
@@ -50,12 +64,12 @@ public class StartTime {
      */
     public static StartTime time1(int countdownTime, int fullCountdownTime, GamePlayerGroup group, int startCountdownPlayerNum, Runnable runnable) {
         return new StartTime(() -> {
-            if (group.size() == group.getTeams().stream().flatMapToInt(team -> IntStream.of(team.getMaxPlayer())).sum()) {
+            if (group.playerNum() == group.getTeams().stream().flatMapToInt(team -> IntStream.of(team.getMaxPlayer())).sum()) {
                 return fullCountdownTime;
             } else {
                 return countdownTime;
             }
-        }, () -> group.size() >= startCountdownPlayerNum, runnable);
+        }, () -> group.playerNum() >= startCountdownPlayerNum, runnable);
     }
 
 }

@@ -5,6 +5,7 @@ import pers.defoliation.minigame.player.GamePlayer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public abstract class GamePlayerGroup {
 
@@ -28,7 +29,7 @@ public abstract class GamePlayerGroup {
         return teamPlayers;
     }
 
-    public int size() {
+    public int playerNum() {
         return getPlayers().size();
     }
 
@@ -44,8 +45,16 @@ public abstract class GamePlayerGroup {
         this.teams.add(team);
     }
 
-    public static GamePlayerGroup getGroup(boolean teamBalance) {
-        return new TeamBalanceGroup();
+    public List<Player> getAlivePlayers() {
+        List<Player> teamPlayers = new ArrayList<>();
+        for (Team team : teams) {
+            teamPlayers.addAll(team.getAlivePlayers());
+        }
+        return teamPlayers;
+    }
+
+    public int getAlivePlayerNum() {
+        return teams.stream().flatMapToInt(team -> IntStream.of(team.getAlivePlayerNum())).sum();
     }
 
 }
