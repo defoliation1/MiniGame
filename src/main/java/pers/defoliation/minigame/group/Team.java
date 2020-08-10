@@ -7,11 +7,17 @@ import java.util.List;
 
 public abstract class Team {
 
+    private String teamName;
     private int maxPlayer;
     private List<GamePlayer> players = new ArrayList<>();
 
-    public Team(int maxPlayer) {
+    public Team(String teamName, int maxPlayer) {
+        this.teamName = teamName;
         this.maxPlayer = maxPlayer;
+    }
+
+    public String getTeamName() {
+        return teamName;
     }
 
     public boolean canJoin() {

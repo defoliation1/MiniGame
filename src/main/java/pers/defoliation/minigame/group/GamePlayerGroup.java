@@ -28,11 +28,23 @@ public abstract class GamePlayerGroup {
         return teamPlayers;
     }
 
-    public void addTeam(Team team){
+    public int size() {
+        return getPlayers().size();
+    }
+
+    public Team getTeamByName(String teamName) {
+        for (Team team : teams) {
+            if (team.getTeamName().equals(teamName))
+                return team;
+        }
+        return null;
+    }
+
+    public void addTeam(Team team) {
         this.teams.add(team);
     }
 
-    public static GamePlayerGroup getGroup(boolean teamBalance){
+    public static GamePlayerGroup getGroup(boolean teamBalance) {
         return new TeamBalanceGroup();
     }
 
