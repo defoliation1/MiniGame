@@ -18,6 +18,9 @@ import pers.defoliation.minigame.player.GamePlayer;
 
 import static org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.PLUGIN;
 
+/**
+ * 如果需要使用，则自己注册
+ */
 public class SpectateListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

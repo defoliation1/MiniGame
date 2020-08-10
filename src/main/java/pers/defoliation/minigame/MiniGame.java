@@ -14,7 +14,6 @@ public class MiniGame extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(new SpectateListener(),this);
         StateManager.init();
         StateManager.create(GameState.ENDED);
     }
