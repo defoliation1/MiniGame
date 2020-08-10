@@ -57,4 +57,13 @@ public abstract class GamePlayerGroup {
         return teams.stream().flatMapToInt(team -> IntStream.of(team.getAlivePlayerNum())).sum();
     }
 
+    public List<Team> getAliveTeams() {
+        List<Team> teams = new ArrayList<>();
+        for (Team team : this.teams) {
+            if (team.getAlivePlayerNum() > 0)
+                teams.add(team);
+        }
+        return teams;
+    }
+
 }
