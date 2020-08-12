@@ -3,7 +3,6 @@ package pers.defoliation.minigame.config;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 public class AnnotationConfig {
 
@@ -11,8 +10,12 @@ public class AnnotationConfig {
         for (Field field : dataObject.getClass().getFields()) {
             Config annotation = field.getAnnotation(Config.class);
             if (annotation != null) {
+                String configName = annotation.value();
+                if(configName.isEmpty()){
+                    configName = field.getName();
+                }
                 if (section.contains(annotation.value())) {
-                    Object o = section.get(annotation.value());
+                    Object o = section.get(configName);
                     try {
                         field.set(dataObject, o);
                     } catch (IllegalAccessException e) {
@@ -27,8 +30,12 @@ public class AnnotationConfig {
         for (Field field : dataObject.getClass().getFields()) {
             Config annotation = field.getAnnotation(Config.class);
             if (annotation != null) {
+                String configName = annotation.value();
+                if(configName.isEmpty()){
+                    configName = field.getName();
+                }
                 try {
-                    section.set(annotation.value(), field.get(dataObject));
+                    section.set(configName, field.get(dataObject));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
@@ -40,8 +47,12 @@ public class AnnotationConfig {
         for (Field field : dataObject.getClass().getFields()) {
             Config annotation = field.getAnnotation(Config.class);
             if (annotation != null) {
+                String configName = annotation.value();
+                if(configName.isEmpty()){
+                    configName = field.getName();
+                }
                 try {
-                    section.addDefault(annotation.value(),field.get(dataObject));
+                    section.addDefault(configName, field.get(dataObject));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
