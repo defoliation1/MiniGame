@@ -24,6 +24,8 @@ public class SpectateListener implements Listener {
 
     private HashMap<Class, Function<Event, Player>> event2PlayerMap = new HashMap<>();
 
+    public boolean active = true;
+
     public SpectateListener() {
         registerEvent2Player(PlayerEvent.class, PlayerEvent::getPlayer);
         registerEvent2Player(BlockPlaceEvent.class, BlockPlaceEvent::getPlayer);
@@ -44,18 +46,19 @@ public class SpectateListener implements Listener {
     public <T extends Event> SpectateListener addHandle(JavaPlugin plugin, Class<T> event, Consumer<T> consumer, boolean ignoreCancel) {
         getEventListeners(event).register(new RegisteredListener(new Listener() {
         }, (listener, event1) -> {
-            if (!(event1 instanceof Cancellable) || !((Cancellable) event1).isCancelled() || !ignoreCancel) {
-                Function<Event, Player> function = getFunction(event1.getClass());
-                if (function == null)
-                    return;
-                Player apply = function.apply(event1);
-                if (apply != null && apply.isOnline()) {
-                    GamePlayer gamePlayer = GamePlayer.getGamePlayer(apply);
-                    if (gamePlayer.isSpectator()) {
-                        consumer.accept((T) event1);
+            if (active)
+                if (!(event1 instanceof Cancellable) || !((Cancellable) event1).isCancelled() || !ignoreCancel) {
+                    Function<Event, Player> function = getFunction(event1.getClass());
+                    if (function == null)
+                        return;
+                    Player apply = function.apply(event1);
+                    if (apply != null && apply.isOnline()) {
+                        GamePlayer gamePlayer = GamePlayer.getGamePlayer(apply);
+                        if (gamePlayer.isSpectator()) {
+                            consumer.accept((T) event1);
+                        }
                     }
                 }
-            }
         }, EventPriority.NORMAL, plugin, ignoreCancel));
         return this;
     }
