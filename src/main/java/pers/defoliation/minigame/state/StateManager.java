@@ -1,7 +1,9 @@
-package pers.defoliation.minigame;
+package pers.defoliation.minigame.state;
 
 import org.bukkit.Bukkit;
+import pers.defoliation.minigame.MiniGame;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -54,6 +56,7 @@ public class StateManager {
                         if (!getKey(anEnum).equals(stringListEntry.getKey())) {
                             removeValue.add(instanceWrapper);
                             moveMap.put(getKey(anEnum), instanceWrapper);
+                            setStateField(instanceWrapper.stateField, instanceWrapper.instance,anEnum);
                         }
                     }
                     stringListEntry.getValue().removeAll(removeValue);
@@ -159,6 +162,7 @@ public class StateManager {
         Object instance;
         Map<String, Method> methodMap = new HashMap<>();
         Map<String, Boolean> needTime = new HashMap<>();
+        Field stateField;
         AtomicInteger runTime = new AtomicInteger();
 
         public InstanceWrapper(Enum anEnum, Object instance) {
@@ -180,6 +184,24 @@ public class StateManager {
                     }
                 }
             }
+            for (Field field : instance.getClass().getFields()) {
+                if (field.getDeclaringClass().equals(anEnum.getClass())) {
+                    State annotation = field.getAnnotation(State.class);
+                    if(annotation!=null){
+                        stateField = field;
+                        setStateField(field,instance,anEnum);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    private static void setStateField(Field field,Object instance,Enum value){
+        try {
+            field.set(instance,value);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 

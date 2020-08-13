@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
 
 public class AnnotationConfig {
 
-    public void load(Object dataObject, ConfigurationSection section) {
+    public static void load(Object dataObject, ConfigurationSection section) {
         for (Field field : dataObject.getClass().getFields()) {
             Config annotation = field.getAnnotation(Config.class);
             if (annotation != null) {
@@ -26,7 +26,7 @@ public class AnnotationConfig {
         }
     }
 
-    public void save(Object dataObject, ConfigurationSection section) {
+    public static void save(Object dataObject, ConfigurationSection section) {
         for (Field field : dataObject.getClass().getFields()) {
             Config annotation = field.getAnnotation(Config.class);
             if (annotation != null) {
@@ -43,7 +43,7 @@ public class AnnotationConfig {
         }
     }
 
-    public void setDefault(Object dataObject, ConfigurationSection section) {
+    public static void setDefault(Object dataObject, ConfigurationSection section) {
         for (Field field : dataObject.getClass().getFields()) {
             Config annotation = field.getAnnotation(Config.class);
             if (annotation != null) {
