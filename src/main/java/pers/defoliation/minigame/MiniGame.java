@@ -1,6 +1,7 @@
 package pers.defoliation.minigame;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import pers.defoliation.minigame.game.GameState;
 import pers.defoliation.minigame.state.StateManager;
 
 public class MiniGame extends JavaPlugin {

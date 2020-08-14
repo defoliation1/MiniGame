@@ -56,7 +56,8 @@ public class StateManager {
                         if (!getKey(anEnum).equals(stringListEntry.getKey())) {
                             removeValue.add(instanceWrapper);
                             moveMap.put(getKey(anEnum), instanceWrapper);
-                            setStateField(instanceWrapper.stateField, instanceWrapper.instance,anEnum);
+                            instanceWrapper.state = anEnum;
+                            instanceWrapper.setStateField();
                         }
                     }
                     stringListEntry.getValue().removeAll(removeValue);
@@ -156,6 +157,15 @@ public class StateManager {
     public static void init() {
     }
 
+    public static <T extends Enum> T getState(Class<T> tClass,Object instance){
+        for (List<InstanceWrapper> value : enumMap.get(tClass).values()) {
+            for (InstanceWrapper instanceWrapper : value) {
+                if(instanceWrapper.instance.equals(instance))
+                    return (T) instanceWrapper.state;
+            }
+        }
+        return null;
+    }
 
     private static class InstanceWrapper {
 
@@ -164,8 +174,10 @@ public class StateManager {
         Map<String, Boolean> needTime = new HashMap<>();
         Field stateField;
         AtomicInteger runTime = new AtomicInteger();
+        Enum state;
 
         public InstanceWrapper(Enum anEnum, Object instance) {
+            state = anEnum;
             this.instance = instance;
             Class<?> aClass = instance.getClass();
             for (Enum enumConstant : anEnum.getClass().getEnumConstants()) {
@@ -187,22 +199,25 @@ public class StateManager {
             for (Field field : instance.getClass().getFields()) {
                 if (field.getDeclaringClass().equals(anEnum.getClass())) {
                     State annotation = field.getAnnotation(State.class);
-                    if(annotation!=null){
+                    if (annotation != null) {
                         stateField = field;
-                        setStateField(field,instance,anEnum);
+                        setStateField();
                         return;
                     }
                 }
             }
         }
+
+        private void setStateField() {
+            if (stateField != null)
+                try {
+                    stateField.set(instance, state);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+        }
+
     }
 
-    private static void setStateField(Field field,Object instance,Enum value){
-        try {
-            field.set(instance,value);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
 
 }

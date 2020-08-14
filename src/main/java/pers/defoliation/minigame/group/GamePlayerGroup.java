@@ -5,11 +5,15 @@ import pers.defoliation.minigame.player.GamePlayer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 public abstract class GamePlayerGroup {
 
     private List<Team> teams = new ArrayList<>();
+
+    private List<Consumer<Player>> joinConsumers = new ArrayList<>();
+    private List<Consumer<Player>> leaveConsumers = new ArrayList<>();
 
     public List<Team> getTeams() {
         return teams;
@@ -17,9 +21,13 @@ public abstract class GamePlayerGroup {
 
     public abstract boolean canJoin(Player player);
 
-    public abstract void join(Player player);
+    public void join(Player player){
+        joinConsumers.forEach(consumer -> consumer.accept(player));
+    }
 
-    public abstract void leave(Player player);
+    public void leave(Player player){
+        leaveConsumers.forEach(consumer -> consumer.accept(player));
+    }
 
     public List<GamePlayer> getPlayers() {
         List<GamePlayer> teamPlayers = new ArrayList<>();
@@ -27,6 +35,14 @@ public abstract class GamePlayerGroup {
             teamPlayers.addAll(team.getPlayers());
         }
         return teamPlayers;
+    }
+
+    public void addJoinTask(Consumer<Player> consumer){
+        joinConsumers.add(consumer);
+    }
+
+    public void addLeaveTask(Consumer<Player> consumer){
+        leaveConsumers.add(consumer);
     }
 
     public int playerNum() {

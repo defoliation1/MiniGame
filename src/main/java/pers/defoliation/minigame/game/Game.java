@@ -1,4 +1,6 @@
-package pers.defoliation.minigame;
+package pers.defoliation.minigame.game;
+
+import pers.defoliation.minigame.group.GamePlayerGroup;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -11,5 +13,7 @@ public interface Game {
     GameState running(AtomicInteger time);
 
     GameState ended(AtomicInteger time);
+
+    GamePlayerGroup getGroup();
 
 }

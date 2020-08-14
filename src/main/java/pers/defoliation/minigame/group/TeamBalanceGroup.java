@@ -18,6 +18,7 @@ public class TeamBalanceGroup extends GamePlayerGroup {
     public void join(Player player) {
         getTeams().get(0).join(player.getName());
         sortTeams();
+        super.join(player);
     }
 
     private void sortTeams() {
@@ -31,5 +32,6 @@ public class TeamBalanceGroup extends GamePlayerGroup {
                 team.leave(player.getName());
         }
         sortTeams();
+        super.leave(player);
     }
 }

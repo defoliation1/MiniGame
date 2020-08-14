@@ -3,7 +3,7 @@ package pers.defoliation.minigame.player;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import pers.defoliation.minigame.Game;
+import pers.defoliation.minigame.game.Game;
 
 import java.util.HashMap;
 
