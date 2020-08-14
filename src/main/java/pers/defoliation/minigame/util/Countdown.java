@@ -48,12 +48,12 @@ public class Countdown {
         return this;
     }
 
-    public Countdown setSecondTask(Consumer<Integer> consumer, int... ints) {
-        if (ints == null || ints.length == 0)
+    public Countdown setSecondTask(Consumer<Integer> consumer, int... seconds) {
+        if (seconds == null || seconds.length == 0)
             return this;
-        Arrays.sort(ints);
+        Arrays.sort(seconds);
         addPerSecondTask(integer -> {
-            if (Arrays.binarySearch(ints, integer) > 0) {
+            if (Arrays.binarySearch(seconds, integer) > 0) {
                 consumer.accept(integer);
             }
         });
