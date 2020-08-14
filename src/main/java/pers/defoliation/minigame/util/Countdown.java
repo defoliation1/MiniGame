@@ -1,24 +1,29 @@
 package pers.defoliation.minigame.util;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import pers.defoliation.minigame.group.GamePlayerGroup;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
-public class StartTime {
+public class Countdown {
 
     private int countdown = Integer.MAX_VALUE;
     private Supplier<Integer> countdownTime;
     private Supplier<Boolean> canCountdown;
-    private Runnable whenStart;
-    private Consumer<Integer> secondConsumer;
+    private Runnable whenZero;
+    private List<Consumer<Integer>> perSecondTask = new ArrayList<>();
+    private Multimap<Integer,Runnable> secondTask = HashMultimap.create();
     private int tick;
 
-    public StartTime(Supplier<Integer> countdownTime, Supplier<Boolean> canCountdown, Runnable whenStart) {
+    public Countdown(Supplier<Integer> countdownTime, Supplier<Boolean> canCountdown, Runnable whenZero) {
         this.countdownTime = countdownTime;
         this.canCountdown = canCountdown;
-        this.whenStart = whenStart;
+        this.whenZero = whenZero;
     }
 
     public void resetCountdown() {
@@ -32,8 +37,12 @@ public class StartTime {
         }
     }
 
-    public void setSecondConsumer(Consumer<Integer> secondConsumer) {
-        this.secondConsumer = secondConsumer;
+    public void addPerSecondTask(Consumer<Integer> secondConsumer) {
+        perSecondTask.add(secondConsumer);
+    }
+
+    public void setSecondTask(int second,Runnable task){
+        secondTask.put(second,task);
     }
 
     public void second() {
@@ -42,14 +51,13 @@ public class StartTime {
             countdown--;
             if (countdown > countdownTime)
                 countdown = countdownTime;
-            if (countdown <= 0)
-                whenStart.run();
+            if (countdown == 0)
+                whenZero.run();
         } else {
             countdown = countdownTime;
         }
-        if (secondConsumer != null) {
-            secondConsumer.accept(countdown);
-        }
+        perSecondTask.forEach(consumer-> consumer.accept(countdownTime));
+        secondTask.get(countdownTime).forEach(Runnable::run);
     }
 
     /**
@@ -62,8 +70,8 @@ public class StartTime {
      * @param runnable                倒计时完成后执行的任务
      * @return
      */
-    public static StartTime time1(int countdownTime, int fullCountdownTime, GamePlayerGroup group, int startCountdownPlayerNum, Runnable runnable) {
-        return new StartTime(() -> {
+    public static Countdown speedUpWhenFull(int countdownTime, int fullCountdownTime, GamePlayerGroup group, int startCountdownPlayerNum, Runnable runnable) {
+        return new Countdown(() -> {
             if (group.playerNum() == group.getTeams().stream().flatMapToInt(team -> IntStream.of(team.getMaxPlayer())).sum()) {
                 return fullCountdownTime;
             } else {
