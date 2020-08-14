@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class Game {
 
     private String gameName;
+    private YamlConfiguration config;
 
     public Game(String gameName) {
         this.gameName = gameName;
@@ -21,8 +22,25 @@ public abstract class Game {
     }
 
     public YamlConfiguration getGameConfig() {
-        YamlConfiguration yamlConfiguration = new YamlConfiguration();
-        File gameConfigFile = getGameConfigFile();
+        if(config!=null)
+            return config;
+        config = new YamlConfiguration();
+        loadConfig();
+        return config;
+    }
+
+    public void loadConfig(){
+        try {
+            config.load(getGameConfigFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private File getGameConfigFile() {
+        File gameConfigFile = new File(getDataFolder(), "game" + File.pathSeparator + gameName + ".yml");
         if (!gameConfigFile.exists()) {
             gameConfigFile.getParentFile().mkdirs();
             try {
@@ -31,19 +49,18 @@ public abstract class Game {
                 e.printStackTrace();
             }
         }
-        try {
-            yamlConfiguration.load(gameConfigFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvalidConfigurationException e) {
-            e.printStackTrace();
-        }
-        return yamlConfiguration;
+        return gameConfigFile;
     }
 
-    private File getGameConfigFile() {
-        return new File(getDataFolder(), "game" + File.pathSeparator + gameName + ".yml");
+    public void saveConfig(){
+        try {
+            config.save(getGameConfigFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+    public void setDefaultConfig(){}
 
     public abstract File getDataFolder();
 

@@ -2,10 +2,13 @@ package pers.defoliation.minigame.util;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import org.bukkit.entity.Player;
 import pers.defoliation.minigame.group.GamePlayerGroup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
@@ -15,15 +18,13 @@ public class Countdown {
     private int countdown = Integer.MAX_VALUE;
     private Supplier<Integer> countdownTime;
     private Supplier<Boolean> canCountdown;
-    private Runnable whenZero;
     private List<Consumer<Integer>> perSecondTask = new ArrayList<>();
-    private Multimap<Integer,Runnable> secondTask = HashMultimap.create();
+    private Multimap<Integer, Runnable> secondTask = HashMultimap.create();
     private int tick;
 
-    public Countdown(Supplier<Integer> countdownTime, Supplier<Boolean> canCountdown, Runnable whenZero) {
+    public Countdown(Supplier<Integer> countdownTime, Supplier<Boolean> canCountdown) {
         this.countdownTime = countdownTime;
         this.canCountdown = canCountdown;
-        this.whenZero = whenZero;
     }
 
     public void resetCountdown() {
@@ -37,12 +38,26 @@ public class Countdown {
         }
     }
 
-    public void addPerSecondTask(Consumer<Integer> secondConsumer) {
+    public Countdown addPerSecondTask(Consumer<Integer> secondConsumer) {
         perSecondTask.add(secondConsumer);
+        return this;
     }
 
-    public void setSecondTask(int second,Runnable task){
-        secondTask.put(second,task);
+    public Countdown setSecondTask(int second, Runnable task) {
+        secondTask.put(second, task);
+        return this;
+    }
+
+    public Countdown setSecondTask(Consumer<Integer> consumer, int... ints) {
+        if (ints == null || ints.length == 0)
+            return this;
+        Arrays.sort(ints);
+        addPerSecondTask(integer -> {
+            if (Arrays.binarySearch(ints, integer) > 0) {
+                consumer.accept(integer);
+            }
+        });
+        return this;
     }
 
     public void second() {
@@ -51,12 +66,10 @@ public class Countdown {
             countdown--;
             if (countdown > countdownTime)
                 countdown = countdownTime;
-            if (countdown == 0)
-                whenZero.run();
         } else {
             countdown = countdownTime;
         }
-        perSecondTask.forEach(consumer-> consumer.accept(countdownTime));
+        perSecondTask.forEach(consumer -> consumer.accept(countdownTime));
         secondTask.get(countdownTime).forEach(Runnable::run);
     }
 
@@ -67,17 +80,27 @@ public class Countdown {
      * @param fullCountdownTime       当玩家数量满时的倒计时时间
      * @param group                   用于判断的玩家群体
      * @param startCountdownPlayerNum 玩家数量的最低要求
-     * @param runnable                倒计时完成后执行的任务
      * @return
      */
-    public static Countdown speedUpWhenFull(int countdownTime, int fullCountdownTime, GamePlayerGroup group, int startCountdownPlayerNum, Runnable runnable) {
+    public static Countdown speedUpWhenFull(int countdownTime, int fullCountdownTime, GamePlayerGroup group, int startCountdownPlayerNum) {
         return new Countdown(() -> {
             if (group.playerNum() == group.getTeams().stream().flatMapToInt(team -> IntStream.of(team.getMaxPlayer())).sum()) {
                 return fullCountdownTime;
             } else {
                 return countdownTime;
             }
-        }, () -> group.playerNum() >= startCountdownPlayerNum, runnable);
+        }, () -> group.playerNum() >= startCountdownPlayerNum);
+    }
+
+    public static Consumer<Integer> setLevel(List<Player> players) {
+        return integer -> players.forEach(player -> player.setLevel(integer));
+    }
+
+    public static Consumer<Integer> sendTitle(List<Player> players, BiFunction<Player, Integer, Title> function) {
+        return integer -> players.forEach(player -> {
+            Title title = function.apply(player, integer);
+            player.sendTitle(title.title, title.subTitle, title.fadeIn, title.stay, title.fadeOut);
+        });
     }
 
 }
