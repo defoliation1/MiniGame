@@ -92,12 +92,12 @@ public class Countdown {
         }, () -> group.playerNum() >= startCountdownPlayerNum);
     }
 
-    public static Consumer<Integer> setLevel(List<Player> players) {
-        return integer -> players.forEach(player -> player.setLevel(integer));
+    public static Consumer<Integer> setLevel(Supplier<List<Player>> players) {
+        return integer -> players.get().forEach(player -> player.setLevel(integer));
     }
 
-    public static Consumer<Integer> sendTitle(List<Player> players, BiFunction<Player, Integer, Title> function) {
-        return integer -> players.forEach(player -> {
+    public static Consumer<Integer> sendTitle(Supplier<List<Player>> players, BiFunction<Player, Integer, Title> function) {
+        return integer -> players.get().forEach(player -> {
             Title title = function.apply(player, integer);
             player.sendTitle(title.title, title.subTitle, title.fadeIn, title.stay, title.fadeOut);
         });
