@@ -10,7 +10,7 @@ public class LocationProvider implements ConfigurationSerializable {
 
     private String name;
     private Location location;
-    private int consumeTimes;
+    private int consumeTimes=-1;
     private int consumeTemp;
 
     public LocationProvider(String name) {
@@ -49,7 +49,8 @@ public class LocationProvider implements ConfigurationSerializable {
         if (consumeTemp > 0) {
             consumeTemp--;
             return getLocation();
-        }
+        }else if(consumeTimes==-1)
+            return getLocation();
         return null;
     }
 
