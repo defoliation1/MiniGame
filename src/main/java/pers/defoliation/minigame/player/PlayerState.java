@@ -1,6 +1,7 @@
 package pers.defoliation.minigame.player;
 
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class PlayerState {
             return this;
         }
 
-        public PlayerState build(){
+        public PlayerState build() {
             return playerState;
         }
 
@@ -44,14 +45,26 @@ public class PlayerState {
         };
     }
 
-    public static Consumer<Player> fullState(){
+    public static Consumer<Player> fullState() {
         return player -> {
             player.setHealth(20);
             player.setFoodLevel(20);
+            player.setSaturation(20);
+            player.setFireTicks(0);
+            player.resetPlayerTime();
+            player.resetPlayerWeather();
         };
     }
 
-    public static Consumer<Player> zeroExp(){
+    public static Consumer<Player> clearPotionEffect() {
+        return player -> {
+            for (PotionEffect activePotionEffect : player.getActivePotionEffects()) {
+                player.removePotionEffect(activePotionEffect.getType());
+            }
+        };
+    }
+
+    public static Consumer<Player> zeroExp() {
         return player -> {
             player.setExp(0);
             player.setLevel(0);
