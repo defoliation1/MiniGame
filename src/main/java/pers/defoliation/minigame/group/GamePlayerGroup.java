@@ -37,12 +37,14 @@ public abstract class GamePlayerGroup {
         return teamPlayers;
     }
 
-    public void addJoinTask(Consumer<Player> consumer){
+    public GamePlayerGroup addJoinTask(Consumer<Player> consumer){
         joinConsumers.add(consumer);
+        return this;
     }
 
-    public void addLeaveTask(Consumer<Player> consumer){
+    public GamePlayerGroup addLeaveTask(Consumer<Player> consumer){
         leaveConsumers.add(consumer);
+        return this;
     }
 
     public int playerNum() {

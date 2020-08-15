@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import pers.defoliation.minigame.game.Game;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class GamePlayer {
 
@@ -56,4 +57,17 @@ public class GamePlayer {
         isSpectator = spectator;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GamePlayer that = (GamePlayer) o;
+        return isSpectator == that.isSpectator &&
+                Objects.equals(playerName, that.playerName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(playerName, isSpectator);
+    }
 }
