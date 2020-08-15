@@ -30,6 +30,11 @@ public class PlayerState {
             playerState.taskList.add(consumer);
             return this;
         }
+
+        public PlayerState build(){
+            return playerState;
+        }
+
     }
 
     public static Consumer<Player> clearInventory() {
