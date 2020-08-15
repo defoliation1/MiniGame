@@ -69,6 +69,10 @@ public abstract class GamePlayerGroup {
         return teamPlayers;
     }
 
+    public int getMaxPlayer(){
+        return teams.stream().flatMapToInt(team -> IntStream.of(team.getMaxPlayer())).sum();
+    }
+
     public int getAlivePlayerNum() {
         return teams.stream().flatMapToInt(team -> IntStream.of(team.getAlivePlayerNum())).sum();
     }
