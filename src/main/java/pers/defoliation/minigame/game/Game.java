@@ -22,14 +22,14 @@ public abstract class Game {
     }
 
     public YamlConfiguration getGameConfig() {
-        if(config!=null)
+        if (config != null)
             return config;
         config = new YamlConfiguration();
         loadConfig();
         return config;
     }
 
-    public void loadConfig(){
+    public void loadConfig() {
         try {
             config.load(getGameConfigFile());
         } catch (IOException e) {
@@ -52,7 +52,7 @@ public abstract class Game {
         return gameConfigFile;
     }
 
-    public void saveConfig(){
+    public void saveConfig() {
         try {
             config.save(getGameConfigFile());
         } catch (IOException e) {
@@ -60,7 +60,8 @@ public abstract class Game {
         }
     }
 
-    public void setDefaultConfig(){}
+    public void setDefaultConfig() {
+    }
 
     public abstract File getDataFolder();
 
@@ -73,5 +74,7 @@ public abstract class Game {
     public abstract GameState ended(AtomicInteger time);
 
     public abstract GamePlayerGroup getGroup();
+
+    public abstract void getConfigConversation();
 
 }
