@@ -2,6 +2,7 @@ package pers.defoliation.minigame.game;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import pers.defoliation.minigame.group.GamePlayerGroup;
 
 import java.io.File;
@@ -75,6 +76,6 @@ public abstract class Game {
 
     public abstract GamePlayerGroup getGroup();
 
-    public abstract void getConfigConversation();
+    public abstract void setGame(Player player,String[] args);
 
 }
