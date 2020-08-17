@@ -35,7 +35,6 @@ public class Conversation {
     private Player player;
 
     private Request<?> currentRequest;
-    private int currentRequestIndex = 0;
 
     private Consumer<Conversation> onCancel;
     private Consumer<Conversation> onComplete;
@@ -63,6 +62,11 @@ public class Conversation {
         return this;
     }
 
+    public Conversation insertRequest(Request<?> request){
+        requests.add(request);
+        return this;
+    }
+
     /**
      * 添加请求
      */
@@ -70,13 +74,6 @@ public class Conversation {
         for (Request<?> request : requests)
             addRequest(request);
         return this;
-    }
-
-    /**
-     * 获取请求
-     */
-    public Request<?> getRequest(int index) {
-        return requests.get(index);
     }
 
     /**
@@ -124,8 +121,7 @@ public class Conversation {
 
         Bukkit.getPluginManager().registerEvents(listener, getPlugin());
 
-        currentRequestIndex = 0;
-        currentRequest = requests.get(currentRequestIndex);
+        currentRequest = requests.remove(0);
         currentRequest.setConversation(this);
         currentRequest.start();
         return this;
@@ -174,14 +170,14 @@ public class Conversation {
         if (!currentRequest.isCompleted())
             return;
 
-        if (++currentRequestIndex >= requests.size()) {
+        if (requests.isEmpty()) {
             dispose();
             if (onComplete != null)
                 onComplete.accept(this);
             return;
         }
 
-        currentRequest = requests.get(currentRequestIndex);
+        currentRequest = requests.remove(0);
         currentRequest.setConversation(this);
         currentRequest.start();
     }
