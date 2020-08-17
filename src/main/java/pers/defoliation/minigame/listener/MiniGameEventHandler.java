@@ -1,21 +1,58 @@
 package pers.defoliation.minigame.listener;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.*;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class MiniGameEventHandler {
 
     private JavaPlugin plugin;
+    private static HashMap<Class, Function<Event, Player>> event2PlayerMap = new HashMap<>();
+
+    static {
+        registerEvent2Player(PlayerEvent.class, PlayerEvent::getPlayer);
+        registerEvent2Player(BlockPlaceEvent.class, BlockPlaceEvent::getPlayer);
+        registerEvent2Player(BlockBreakEvent.class, BlockBreakEvent::getPlayer);
+        registerEvent2Player(InventoryOpenEvent.class, event -> (Player) event.getPlayer());
+        registerEvent2Player(InventoryClickEvent.class, event -> (Player) event.getWhoClicked());
+    }
 
     public MiniGameEventHandler(JavaPlugin plugin) {
         this.plugin = plugin;
     }
+
+    public static <T extends Event> void registerEvent2Player(Class<T> tClass, Function<T, Player> playerFunction) {
+        event2PlayerMap.put(tClass, (Function<Event, Player>) playerFunction);
+    }
+
+    public static Player getPlayerByEvent(Event event) {
+        Function<Event, Player> function = getFunction(event.getClass());
+        if (function == null)
+            return null;
+        return function.apply(event);
+    }
+
+    private static Function<Event, Player> getFunction(Class clazz) {
+        if (clazz == null || clazz.equals(Object.class))
+            return null;
+        if (event2PlayerMap.containsKey(clazz))
+            return event2PlayerMap.get(clazz);
+        return getFunction(clazz.getSuperclass());
+    }
+
 
     public <T extends Event> MiniGameEventHandler addHandle(Class<T> event, Consumer<T> consumer) {
         return addHandle(event, consumer, ignoreCancel());
@@ -31,8 +68,12 @@ public class MiniGameEventHandler {
         return this;
     }
 
-    protected <T extends Event> void acceptEvent(Event event, Consumer<T> consumer){
+    protected <T extends Event> void acceptEvent(Event event, Consumer<T> consumer) {
         consumer.accept((T) event);
+    }
+
+    protected <T extends Event> void acceptEvent(Event event, Player player, BiConsumer<Player, T> consumer) {
+        consumer.accept(player, (T) event);
     }
 
     public static <T extends Event> Function<T, Boolean> ignoreCancel() {
