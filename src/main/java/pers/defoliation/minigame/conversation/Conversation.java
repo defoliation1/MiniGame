@@ -62,8 +62,10 @@ public class Conversation {
         return this;
     }
 
-    public Conversation insertRequest(Request<?> request){
-        requests.add(request);
+    public Conversation insertRequest(Request<?>... request) {
+        for (int i = request.length - 1; i >= 0; i--) {
+            requests.add(0, request[i]);
+        }
         return this;
     }
 
