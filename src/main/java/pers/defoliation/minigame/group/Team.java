@@ -22,7 +22,7 @@ public abstract class Team {
     }
 
     public boolean canJoin() {
-        return players.size() < maxPlayer;
+        return players.size() < getMaxPlayer();
     }
 
     public void join(String player) {
