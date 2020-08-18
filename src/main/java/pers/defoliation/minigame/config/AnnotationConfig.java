@@ -7,7 +7,7 @@ import java.lang.reflect.Field;
 public class AnnotationConfig {
 
     public static void load(Object dataObject, ConfigurationSection section) {
-        for (Field field : dataObject.getClass().getFields()) {
+        for (Field field : dataObject.getClass().getDeclaredFields()) {
             Config annotation = field.getAnnotation(Config.class);
             if (annotation != null) {
                 String configName = annotation.value();
@@ -15,6 +15,7 @@ public class AnnotationConfig {
                     configName = field.getName();
                 }
                 if (section.contains(annotation.value())) {
+                    field.setAccessible(true);
                     Object o = section.get(configName);
                     try {
                         field.set(dataObject, o);
@@ -27,7 +28,7 @@ public class AnnotationConfig {
     }
 
     public static void save(Object dataObject, ConfigurationSection section) {
-        for (Field field : dataObject.getClass().getFields()) {
+        for (Field field : dataObject.getClass().getDeclaredFields()) {
             Config annotation = field.getAnnotation(Config.class);
             if (annotation != null) {
                 String configName = annotation.value();
@@ -35,6 +36,7 @@ public class AnnotationConfig {
                     configName = field.getName();
                 }
                 try {
+                    field.setAccessible(true);
                     section.set(configName, field.get(dataObject));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
@@ -44,7 +46,7 @@ public class AnnotationConfig {
     }
 
     public static void setDefault(Object dataObject, ConfigurationSection section) {
-        for (Field field : dataObject.getClass().getFields()) {
+        for (Field field : dataObject.getClass().getDeclaredFields()) {
             Config annotation = field.getAnnotation(Config.class);
             if (annotation != null) {
                 String configName = annotation.value();
@@ -52,6 +54,7 @@ public class AnnotationConfig {
                     configName = field.getName();
                 }
                 try {
+                    field.setAccessible(true);
                     section.addDefault(configName, field.get(dataObject));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();

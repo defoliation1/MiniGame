@@ -17,6 +17,14 @@ public abstract class Team {
         this.maxPlayer = maxPlayer;
     }
 
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
+
+    public void setMaxPlayer(int maxPlayer) {
+        this.maxPlayer = maxPlayer;
+    }
+
     public String getTeamName() {
         return teamName;
     }
