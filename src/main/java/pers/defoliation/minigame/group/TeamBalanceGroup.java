@@ -27,11 +27,12 @@ public class TeamBalanceGroup extends GamePlayerGroup {
 
     @Override
     public void leave(Player player) {
+        super.leave(player);
         for (Team team : getTeams()) {
             if (team.contains(player.getName()))
                 team.leave(player.getName());
         }
         sortTeams();
-        super.leave(player);
+        removeSpectator(player);
     }
 }
