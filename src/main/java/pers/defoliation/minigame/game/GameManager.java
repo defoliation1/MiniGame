@@ -57,11 +57,11 @@ public abstract class GameManager implements Listener {
             if (getWaitingGame() == null) {
                 playerJoinEvent.getPlayer().kickPlayer("服务器错误-没有准备中的游戏");
             } else {
-                if (getGameState(getWaitingGame()) != GameState.WAITING || !getWaitingGame().getGroup().canJoin(playerJoinEvent.getPlayer())) {
+                if (getGameState(getWaitingGame()) != GameState.WAITING || !getWaitingGame().canJoin(playerJoinEvent.getPlayer())) {
                     playerJoinEvent.getPlayer().kickPlayer("加入游戏错误");
                     return;
                 }
-                getWaitingGame().getGroup().join(playerJoinEvent.getPlayer());
+                getWaitingGame().join(playerJoinEvent.getPlayer());
             }
         }
     }
