@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
-public abstract class GamePlayerGroup {
+public abstract class GamePlayerGroup<T extends Team> {
 
-    private List<Team> teams = new ArrayList<>();
+    private List<T> teams = new ArrayList<>();
     private List<GamePlayer> spectators = new ArrayList<>();
 
     private List<Consumer<Player>> joinConsumers = new ArrayList<>();
     private List<Consumer<Player>> leaveConsumers = new ArrayList<>();
 
-    public List<Team> getTeams() {
+    public List<T> getTeams() {
         return teams;
     }
 
@@ -52,15 +52,15 @@ public abstract class GamePlayerGroup {
         return getPlayers().size();
     }
 
-    public Team getTeamByName(String teamName) {
-        for (Team team : teams) {
+    public T getTeamByName(String teamName) {
+        for (T team : teams) {
             if (team.getTeamName().equals(teamName))
                 return team;
         }
         return null;
     }
 
-    public void addTeam(Team team) {
+    public void addTeam(T team) {
         this.teams.add(team);
     }
 
@@ -80,21 +80,21 @@ public abstract class GamePlayerGroup {
         return teams.stream().flatMapToInt(team -> IntStream.of(team.getAlivePlayerNum())).sum();
     }
 
-    public Team getTeamByPlayer(Player player) {
+    public T getTeamByPlayer(Player player) {
         return getTeamByPlayer(GamePlayer.getGamePlayer(player));
     }
 
-    public Team getTeamByPlayer(GamePlayer player) {
-        for (Team team : teams) {
+    public T getTeamByPlayer(GamePlayer player) {
+        for (T team : teams) {
             if (team.getPlayers().contains(player))
                 return team;
         }
         return null;
     }
 
-    public List<Team> getAliveTeams() {
-        List<Team> teams = new ArrayList<>();
-        for (Team team : this.teams) {
+    public List<T> getAliveTeams() {
+        List<T> teams = new ArrayList<>();
+        for (T team : this.teams) {
             if (team.getAlivePlayerNum() > 0)
                 teams.add(team);
         }

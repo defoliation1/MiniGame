@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class TeamBalanceGroup extends GamePlayerGroup {
+public class TeamBalanceGroup<T extends Team> extends GamePlayerGroup<T> {
 
     @Override
     public boolean canJoin(Player player) {
