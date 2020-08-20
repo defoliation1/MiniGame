@@ -74,8 +74,12 @@ public abstract class Game {
 
     public abstract GameState ended(AtomicInteger time);
 
-    public abstract GamePlayerGroup getGroup();
+    public abstract boolean canJoin(Player player);
 
-    public abstract void setGame(Player player,String[] args);
+    public abstract void join(Player player);
+
+    public abstract void leave(Player player);
+
+    public abstract void setGame(Player player, String[] args);
 
 }
