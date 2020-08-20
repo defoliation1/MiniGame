@@ -22,11 +22,11 @@ public abstract class GamePlayerGroup {
 
     public abstract boolean canJoin(Player player);
 
-    public void join(Player player){
+    public void join(Player player) {
         joinConsumers.forEach(consumer -> consumer.accept(player));
     }
 
-    public void leave(Player player){
+    public void leave(Player player) {
         leaveConsumers.forEach(consumer -> consumer.accept(player));
     }
 
@@ -38,12 +38,12 @@ public abstract class GamePlayerGroup {
         return teamPlayers;
     }
 
-    public GamePlayerGroup addJoinTask(Consumer<Player> consumer){
+    public GamePlayerGroup addJoinTask(Consumer<Player> consumer) {
         joinConsumers.add(consumer);
         return this;
     }
 
-    public GamePlayerGroup addLeaveTask(Consumer<Player> consumer){
+    public GamePlayerGroup addLeaveTask(Consumer<Player> consumer) {
         leaveConsumers.add(consumer);
         return this;
     }
@@ -72,7 +72,7 @@ public abstract class GamePlayerGroup {
         return teamPlayers;
     }
 
-    public int getMaxPlayer(){
+    public int getMaxPlayer() {
         return teams.stream().flatMapToInt(team -> IntStream.of(team.getMaxPlayer())).sum();
     }
 
@@ -89,16 +89,16 @@ public abstract class GamePlayerGroup {
         return teams;
     }
 
-    public void addSpectator(GamePlayer gamePlayer){
-        spectators.add(gamePlayer);
+    public void addSpectator(Player gamePlayer) {
+        spectators.add(GamePlayer.getGamePlayer(gamePlayer));
     }
 
     public List<GamePlayer> getSpectators() {
         return spectators;
     }
 
-    public void removeSpectator(GamePlayer gamePlayer){
-        this.spectators.remove(gamePlayer);
+    public void removeSpectator(Player gamePlayer) {
+        this.spectators.remove(GamePlayer.getGamePlayer(gamePlayer));
     }
 
 }
