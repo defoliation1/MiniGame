@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public abstract class GameManager implements Listener {
+public abstract class GameManager<T extends Game> implements Listener {
 
     private static final Random random = new Random(System.currentTimeMillis());
-    private List<Game> games = new ArrayList<>();
+    private List<T> games = new ArrayList<>();
 
-    private Game playingGame;
-    private Game waitingGame;
+    private T playingGame;
+    private T waitingGame;
 
     public GameManager(JavaPlugin plugin) {
 
@@ -27,7 +27,7 @@ public abstract class GameManager implements Listener {
 
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             if ((waitingGame == null || getGameState(waitingGame) != GameState.WAITING) && !games.isEmpty()) {
-                List<Game> collect = games.stream().filter(game -> getGameState(game) == GameState.WAITING).collect(Collectors.toList());
+                List<T> collect = games.stream().filter(game -> getGameState(game) == GameState.WAITING).collect(Collectors.toList());
                 if (!collect.isEmpty()) {
                     waitingGame = collect.get(random.nextInt(collect.size()));
                 }
@@ -66,22 +66,22 @@ public abstract class GameManager implements Listener {
         }
     }
 
-    protected abstract GameState getGameState(Game game);
+    protected abstract GameState getGameState(T game);
 
-    public void addGame(Game game) {
+    public void addGame(T game) {
         games.add(game);
         StateManager.addInstance(GameState.PREPARING, game);
     }
 
-    public Game getWaitingGame() {
+    public T getWaitingGame() {
         return waitingGame;
     }
 
-    public Game getPlayingGame() {
+    public T getPlayingGame() {
         return playingGame;
     }
 
-    public void setPlayingGame(Game playingGame) {
+    public void setPlayingGame(T playingGame) {
         this.playingGame = playingGame;
     }
 }
