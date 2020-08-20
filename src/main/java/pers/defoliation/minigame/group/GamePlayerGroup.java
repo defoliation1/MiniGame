@@ -80,6 +80,18 @@ public abstract class GamePlayerGroup {
         return teams.stream().flatMapToInt(team -> IntStream.of(team.getAlivePlayerNum())).sum();
     }
 
+    public Team getTeamByPlayer(Player player) {
+        return getTeamByPlayer(GamePlayer.getGamePlayer(player));
+    }
+
+    public Team getTeamByPlayer(GamePlayer player) {
+        for (Team team : teams) {
+            if (team.getPlayers().contains(player))
+                return team;
+        }
+        return null;
+    }
+
     public List<Team> getAliveTeams() {
         List<Team> teams = new ArrayList<>();
         for (Team team : this.teams) {
