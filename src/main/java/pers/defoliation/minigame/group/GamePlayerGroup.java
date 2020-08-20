@@ -11,6 +11,7 @@ import java.util.stream.IntStream;
 public abstract class GamePlayerGroup {
 
     private List<Team> teams = new ArrayList<>();
+    private List<GamePlayer> spectators = new ArrayList<>();
 
     private List<Consumer<Player>> joinConsumers = new ArrayList<>();
     private List<Consumer<Player>> leaveConsumers = new ArrayList<>();
@@ -86,6 +87,18 @@ public abstract class GamePlayerGroup {
                 teams.add(team);
         }
         return teams;
+    }
+
+    public void addSpectator(GamePlayer gamePlayer){
+        spectators.add(gamePlayer);
+    }
+
+    public List<GamePlayer> getSpectators() {
+        return spectators;
+    }
+
+    public void removeSpectator(GamePlayer gamePlayer){
+        this.spectators.remove(gamePlayer);
     }
 
 }
