@@ -9,8 +9,8 @@ import pers.defoliation.minigame.group.Team;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
@@ -97,11 +97,8 @@ public class Countdown {
         return integer -> players.get().forEach(player -> player.setLevel(integer));
     }
 
-    public static Consumer<Integer> sendTitle(Supplier<List<Player>> players, BiFunction<Player, Integer, Title> function) {
-        return integer -> players.get().forEach(player -> {
-            Title title = function.apply(player, integer);
-            player.sendTitle(title.title, title.subTitle, title.fadeIn, title.stay, title.fadeOut);
-        });
+    public static Consumer<Integer> sendTitle(Supplier<List<Player>> players, Function<Integer, Title> function) {
+        return integer -> function.apply(integer).send(players.get());
     }
 
 }
