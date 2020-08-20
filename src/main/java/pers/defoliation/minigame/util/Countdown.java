@@ -4,6 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.bukkit.entity.Player;
 import pers.defoliation.minigame.group.GamePlayerGroup;
+import pers.defoliation.minigame.group.Team;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,7 +83,7 @@ public class Countdown {
      * @param startCountdownPlayerNum 玩家数量的最低要求
      * @return
      */
-    public static Countdown speedUpWhenFull(int countdownTime, int fullCountdownTime, GamePlayerGroup group, int startCountdownPlayerNum) {
+    public static Countdown speedUpWhenFull(int countdownTime, int fullCountdownTime, GamePlayerGroup<? extends Team> group, int startCountdownPlayerNum) {
         return new Countdown(() -> {
             if (group.playerNum() == group.getTeams().stream().flatMapToInt(team -> IntStream.of(team.getMaxPlayer())).sum()) {
                 return fullCountdownTime;
