@@ -2,6 +2,7 @@ package pers.defoliation.minigame.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
@@ -14,6 +15,8 @@ public class Countdown<T> {
     private Consumer<T> whenEnd;
 
     private List<BiConsumer<T, AtomicInteger>> perSecondTask = new ArrayList<>();
+
+    private HashMap<Integer, BiConsumer<T, AtomicInteger>> secondTask = new HashMap<>();
 
     private int tick;
 
@@ -76,6 +79,13 @@ public class Countdown<T> {
         public CountdownBuilder<T> addPerSecondTask(BiConsumer<T, AtomicInteger>... consumers) {
             for (BiConsumer<T, AtomicInteger> consumer : consumers) {
                 countdown.perSecondTask.add(consumer);
+            }
+            return this;
+        }
+
+        public CountdownBuilder<T> addSecondTask(BiConsumer<T, AtomicInteger> consumer, int... seconds) {
+            for (int second : seconds) {
+                countdown.secondTask.put(second, consumer);
             }
             return this;
         }
