@@ -83,7 +83,7 @@ public class Countdown<T> {
             return this;
         }
 
-        public CountdownBuilder<T> addSecondTask(BiConsumer<T, AtomicInteger> consumer, int... seconds) {
+        public CountdownBuilder<T> setSecondTask(BiConsumer<T, AtomicInteger> consumer, int... seconds) {
             for (int second : seconds) {
                 countdown.secondTask.put(second, consumer);
             }
