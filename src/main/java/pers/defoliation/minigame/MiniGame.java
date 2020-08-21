@@ -18,6 +18,5 @@ public class MiniGame extends JavaPlugin {
     public void onEnable() {
         ConfigurationSerialization.registerClass(LocationProvider.class);
         StateManager.init();
-        StateManager.create(GameState.ENDED);
     }
 }
