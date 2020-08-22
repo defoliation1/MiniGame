@@ -12,9 +12,13 @@ public interface Region {
 
     void addBreakableBlock(Location location);
 
+    boolean isBreakableBlock(Location location);
+
     void removeBreakableBlock(Location location);
 
     void addUnbreakableBlock(Location location);
+
+    boolean isUnbreakableBlock(Location location);
 
     void removeUnbreakableBlock(Location location);
 
