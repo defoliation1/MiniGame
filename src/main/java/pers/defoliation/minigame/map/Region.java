@@ -6,8 +6,20 @@ public interface Region {
 
     void reset();
 
-    Location getLocationA();
+    Location getMaxLocation();
 
-    Location getLocationB();
+    Location getMinLocation();
+
+    void addBreakableBlock(Location location);
+
+    void removeBreakableBlock(Location location);
+
+    void addUnbreakableBlock(Location location);
+
+    void removeUnbreakableBlock(Location location);
+
+    void setCanBreakInRegion(boolean flag);
+
+    boolean canBreakInRegion();
 
 }
