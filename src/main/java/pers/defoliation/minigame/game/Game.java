@@ -80,6 +80,4 @@ public abstract class Game {
 
     public abstract void leave(Player player);
 
-    public abstract void setGame(Player player, String[] args);
-
 }

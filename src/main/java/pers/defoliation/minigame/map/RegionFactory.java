@@ -22,5 +22,4 @@ public final class RegionFactory {
         return new AgentRegion(locationA,locationB);
     }
 
-
 }
