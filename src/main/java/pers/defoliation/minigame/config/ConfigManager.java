@@ -99,7 +99,7 @@ public class ConfigManager {
         }
 
         public Request getRequest() {
-            Request request = requestMap.get(requestClass).get().setOnComplete(o -> onMeetConsumer.accept((T) o));
+            Request request = requestMap.get(requestClass).get().setOnComplete(o -> onMeetConsumer.accept(((Request<T>) o).getResult().get()));
             requestBuild.accept(request);
             return request;
         }
