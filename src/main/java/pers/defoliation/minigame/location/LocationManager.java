@@ -71,12 +71,12 @@ public class LocationManager {
     }
 
     public void save(ConfigurationSection section) {
-        section.set("locationProvider",map);
+        section.set("location",map);
     }
 
     public void load(ConfigurationSection section) {
         map.clear();
-        ConfigurationSection locationProvider = section.getConfigurationSection("locationProvider");
+        ConfigurationSection locationProvider = section.getConfigurationSection("location");
         for (String key : locationProvider.getKeys(false)) {
             map.put(key, (LocationProvider) locationProvider.get(key));
         }
