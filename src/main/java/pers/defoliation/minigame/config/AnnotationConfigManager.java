@@ -8,19 +8,11 @@ import pers.defoliation.minigame.conversation.request.Request;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public class AnnotationConfigManager {
-
-    private Map<Class, BiFunction<String, Consumer<?>, Request<?>>> requestMap = new HashMap<>();
-
-    public <T> void putCompletionRequest(Class<T> tClass, BiFunction<String, Consumer<T>, Request<?>> function) {
-        requestMap.put(tClass, (BiFunction<String, Consumer<?>, Request<?>>) (Object) function);
-    }
 
     public void load(Object dataObject, ConfigurationSection section) {
         for (Field field : dataObject.getClass().getDeclaredFields()) {
@@ -81,7 +73,7 @@ public class AnnotationConfigManager {
         }
     }
 
-    public void complete(Player player, Object object, String... keys) {
+    public void complete(Player player, Object object, RequestFunctionMap map, String... keys) {
         if (keys == null || keys.length == 0) {
             List<String> list = new ArrayList<>();
             for (Field declaredField : object.getClass().getDeclaredFields()) {
@@ -103,7 +95,7 @@ public class AnnotationConfigManager {
             }
             if (list.isEmpty())
                 return;
-            complete(player, object, list.toArray(new String[0]));
+            complete(player, object, map, list.toArray(new String[0]));
         }
 
         Class<?> aClass = object.getClass();
@@ -115,9 +107,11 @@ public class AnnotationConfigManager {
                 Field declaredField = aClass.getDeclaredField(key);
                 declaredField.setAccessible(true);
                 Class<?> declaringClass = declaredField.getDeclaringClass();
-                if (!requestMap.containsKey(declaringClass))
+                BiFunction<String, Consumer<?>, Request<?>> function;
+                function = map.getRequestMap().get(declaringClass);
+                if (function == null)
                     throw new IllegalArgumentException(declaringClass + " 没有注册");
-                Request<?> request = requestMap.get(declaringClass).apply(key, o -> {
+                Request<?> request = function.apply(key, o -> {
                     try {
                         declaredField.set(object, o);
                     } catch (IllegalAccessException e) {
@@ -133,7 +127,6 @@ public class AnnotationConfigManager {
         }
 
         conversation.start(player);
-
     }
 
 }
