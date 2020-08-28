@@ -3,7 +3,7 @@ package pers.defoliation.minigame.game;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import pers.defoliation.minigame.group.GamePlayerGroup;
+import pers.defoliation.minigame.config.GameConfigurationSection;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class Game {
 
     private String gameName;
-    private YamlConfiguration config;
+    private GameConfigurationSection config;
 
     public Game(String gameName) {
         this.gameName = gameName;
@@ -22,17 +22,17 @@ public abstract class Game {
         return gameName;
     }
 
-    public YamlConfiguration getGameConfig() {
+    public GameConfigurationSection getGameConfig() {
         if (config != null)
             return config;
-        config = new YamlConfiguration();
+        config = new GameConfigurationSection(new YamlConfiguration());
         loadConfig();
         return config;
     }
 
     public void loadConfig() {
         try {
-            config.load(getGameConfigFile());
+            ((YamlConfiguration) config.getSection()).load(getGameConfigFile());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InvalidConfigurationException e) {
@@ -55,7 +55,7 @@ public abstract class Game {
 
     public void saveConfig() {
         try {
-            config.save(getGameConfigFile());
+            ((YamlConfiguration) config.getSection()).save(getGameConfigFile());
         } catch (IOException e) {
             e.printStackTrace();
         }

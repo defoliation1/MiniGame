@@ -26,6 +26,10 @@ public class GameConfigurationSection implements ConfigurationSection {
         this.section = section;
     }
 
+    public ConfigurationSection getSection() {
+        return section;
+    }
+
     public <T> GameConfigurationSection request(String key, Function<Consumer<T>, Request<?>> function) {
         requestMap.put(key, (Function<Consumer<?>, Request<?>>) (Object) function);
         return this;
