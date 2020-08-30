@@ -20,7 +20,7 @@ public class GameConfigurationSection implements ConfigurationSection {
 
     private ConfigurationSection section;
 
-    private HashMap<String, Function<Consumer<?>, Request<?>>> requestMap = new HashMap<>();
+    private HashMap<String, RequestWrapper> requestMap = new HashMap<>();
 
     public GameConfigurationSection(ConfigurationSection section) {
         this.section = section;
@@ -30,9 +30,28 @@ public class GameConfigurationSection implements ConfigurationSection {
         return section;
     }
 
-    public <T> GameConfigurationSection request(String key, Function<Consumer<T>, Request<?>> function) {
-        requestMap.put(key, (Function<Consumer<?>, Request<?>>) (Object) function);
+    public GameConfigurationSection request(String key, Function<Consumer<?>, Request<?>> function) {
+        requestMap.put(key, new RequestWrapper(function, notEmpty()));
         return this;
+    }
+
+    public GameConfigurationSection request(String key, Function<Consumer<?>, Request<?>> function, Function<Object, Boolean> isComplete) {
+        requestMap.put(key, new RequestWrapper(function, isComplete));
+        return this;
+    }
+
+    private static Function<Object, Boolean> notEmpty() {
+        return o -> o != null;
+    }
+
+    private class RequestWrapper {
+        Function<Consumer<?>, Request<?>> function;
+        Function<Object, Boolean> isComplete;
+
+        public RequestWrapper(Function<Consumer<?>, Request<?>> function, Function<Object, Boolean> isComplete) {
+            this.function = function;
+            this.isComplete = isComplete;
+        }
     }
 
     public void completeRequest(Player player) {
@@ -43,8 +62,9 @@ public class GameConfigurationSection implements ConfigurationSection {
         Conversation conversation = new Conversation(MiniGame.INSTANCE);
         for (String s : list) {
             if (requestMap.containsKey(s)) {
-                Function<Consumer<?>, Request<?>> function = requestMap.get(s);
-                conversation.addRequest(function.apply(o -> set(s, o)));
+                RequestWrapper requestWrapper = requestMap.get(s);
+                if (!requestWrapper.isComplete.apply(get(s)))
+                    conversation.addRequest(requestWrapper.function.apply(o -> set(s, o)));
             }
         }
         conversation.start(player);
@@ -53,7 +73,7 @@ public class GameConfigurationSection implements ConfigurationSection {
     public List<String> getNeedCompleteRequest() {
         List<String> list = new ArrayList<>();
         for (String s : requestMap.keySet()) {
-            if (contains(s) && get(s) != null)
+            if (!requestMap.get(s).isComplete.apply(get(s)))
                 list.add(s);
         }
         return list;
@@ -61,11 +81,11 @@ public class GameConfigurationSection implements ConfigurationSection {
 
     public boolean allRequestIsComplete() {
         for (String s : requestMap.keySet()) {
-            if (contains(s) && get(s) != null) {
-                return true;
+            if (!requestMap.get(s).isComplete.apply(get(s))) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     @Override
