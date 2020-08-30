@@ -149,5 +149,6 @@ public interface Request<T> {
 	 * 注：内部方法，不建议直接调用<br>
 	 */
 	void setConversation(Conversation conversation);
-	
+
+    void sendMessage(String message);
 }
