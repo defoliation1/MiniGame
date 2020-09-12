@@ -13,20 +13,20 @@ public abstract class GamePlayerGroup<T extends Team> {
     private List<T> teams = new ArrayList<>();
     private List<GamePlayer> spectators = new ArrayList<>();
 
-    private List<Consumer<Player>> joinConsumers = new ArrayList<>();
-    private List<Consumer<Player>> leaveConsumers = new ArrayList<>();
+    private List<Consumer<GamePlayer>> joinConsumers = new ArrayList<>();
+    private List<Consumer<GamePlayer>> leaveConsumers = new ArrayList<>();
 
     public List<T> getTeams() {
         return teams;
     }
 
-    public abstract boolean canJoin(Player player);
+    public abstract boolean canJoin(GamePlayer player);
 
-    public void join(Player player) {
+    public void join(GamePlayer player) {
         joinConsumers.forEach(consumer -> consumer.accept(player));
     }
 
-    public void leave(Player player) {
+    public void leave(GamePlayer player) {
         leaveConsumers.forEach(consumer -> consumer.accept(player));
     }
 
@@ -38,12 +38,12 @@ public abstract class GamePlayerGroup<T extends Team> {
         return teamPlayers;
     }
 
-    public GamePlayerGroup addJoinTask(Consumer<Player> consumer) {
+    public GamePlayerGroup addJoinTask(Consumer<GamePlayer> consumer) {
         joinConsumers.add(consumer);
         return this;
     }
 
-    public GamePlayerGroup addLeaveTask(Consumer<Player> consumer) {
+    public GamePlayerGroup addLeaveTask(Consumer<GamePlayer> consumer) {
         leaveConsumers.add(consumer);
         return this;
     }
@@ -101,16 +101,20 @@ public abstract class GamePlayerGroup<T extends Team> {
         return teams;
     }
 
-    public void addSpectator(Player gamePlayer) {
-        spectators.add(GamePlayer.getGamePlayer(gamePlayer));
+    public void addSpectator(GamePlayer gamePlayer) {
+        for (T team : teams) {
+            if (team.contains(gamePlayer.getName()))
+                throw new IllegalStateException("玩家已在队伍内,加入观战失败 尝试加入的玩家: " + gamePlayer.getName());
+        }
+        spectators.add(gamePlayer);
     }
 
     public List<GamePlayer> getSpectators() {
         return spectators;
     }
 
-    public void removeSpectator(Player gamePlayer) {
-        this.spectators.remove(GamePlayer.getGamePlayer(gamePlayer));
+    public void removeSpectator(GamePlayer gamePlayer) {
+        this.spectators.remove(gamePlayer);
     }
 
 }

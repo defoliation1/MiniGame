@@ -40,7 +40,7 @@ public abstract class Team {
     public void leave(String player) {
         GamePlayer leavePlayer = null;
         for (GamePlayer gamePlayer : players) {
-            if (gamePlayer.getPlayerName().equals(player))
+            if (gamePlayer.getName().equals(player))
                 leavePlayer = gamePlayer;
         }
         if (leavePlayer != null)
@@ -61,7 +61,7 @@ public abstract class Team {
 
     public boolean contains(String name) {
         for (GamePlayer player : players) {
-            if (player.getPlayerName().equals(name))
+            if (player.getName().equals(name))
                 return true;
         }
         return false;

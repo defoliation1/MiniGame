@@ -1,6 +1,7 @@
 package pers.defoliation.minigame.group;
 
 import org.bukkit.entity.Player;
+import pers.defoliation.minigame.player.GamePlayer;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,14 +9,14 @@ import java.util.Comparator;
 public class TeamBalanceGroup<T extends Team> extends GamePlayerGroup<T> {
 
     @Override
-    public boolean canJoin(Player player) {
+    public boolean canJoin(GamePlayer player) {
         if (getTeams().isEmpty())
             return false;
         return getTeams().get(0).canJoin();
     }
 
     @Override
-    public void join(Player player) {
+    public void join(GamePlayer player) {
         getTeams().get(0).join(player.getName());
         sortTeams();
         super.join(player);
@@ -26,7 +27,7 @@ public class TeamBalanceGroup<T extends Team> extends GamePlayerGroup<T> {
     }
 
     @Override
-    public void leave(Player player) {
+    public void leave(GamePlayer player) {
         super.leave(player);
         for (Team team : getTeams()) {
             if (team.contains(player.getName()))
