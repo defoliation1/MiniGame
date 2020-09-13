@@ -50,11 +50,11 @@ public class GamePlayer {
     }
 
     public boolean isSpectator() {
-        return game != null && isSpectator;
+        return isSpectator;
     }
 
     public boolean isEffective() {
-        return isOnline() && !isSpectator();
+        return isOnline() && !isSpectator() && game != null;
     }
 
     public void setSpectator(boolean spectator) {
