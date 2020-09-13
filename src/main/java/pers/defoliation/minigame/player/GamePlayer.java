@@ -21,7 +21,7 @@ public class GamePlayer {
         this.playerName = playerName;
     }
 
-    public String getPlayerName() {
+    public String getName() {
         return playerName;
     }
 
@@ -51,6 +51,10 @@ public class GamePlayer {
 
     public boolean isSpectator() {
         return game != null && isSpectator;
+    }
+
+    public boolean isEffective() {
+        return isOnline() && !isSpectator();
     }
 
     public void setSpectator(boolean spectator) {
