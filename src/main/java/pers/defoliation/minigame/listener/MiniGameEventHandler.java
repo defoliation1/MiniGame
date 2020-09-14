@@ -22,6 +22,8 @@ public class MiniGameEventHandler {
     private JavaPlugin plugin;
     private static HashMap<Class, Function<Event, Player>> event2PlayerMap = new HashMap<>();
 
+    private boolean enable = true;
+
     static {
         registerEvent2Player(PlayerEvent.class, PlayerEvent::getPlayer);
         registerEvent2Player(BlockPlaceEvent.class, BlockPlaceEvent::getPlayer);
@@ -36,6 +38,14 @@ public class MiniGameEventHandler {
 
     public static <T extends Event> void registerEvent2Player(Class<T> tClass, Function<T, Player> playerFunction) {
         event2PlayerMap.put(tClass, (Function<Event, Player>) playerFunction);
+    }
+
+    public boolean isEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
 
     public static Player getPlayerByEvent(Event event) {
@@ -61,7 +71,7 @@ public class MiniGameEventHandler {
     public <T extends Event> MiniGameEventHandler addHandle(Class<T> event, Consumer<T> consumer, Function<T, Boolean> ignore) {
         getEventListeners(event).register(new RegisteredListener(new Listener() {
         }, (listener, event1) -> {
-            if (!ignore.apply((T) event1)) {
+            if (enable && !ignore.apply((T) event1)) {
                 acceptEvent(event1, consumer);
             }
         }, EventPriority.NORMAL, plugin, false));
