@@ -60,6 +60,14 @@ public class StateManager {
         return null;
     }
 
+    public static AtomicInteger getClock(Game instance) {
+        for (InstanceWrapper instanceWrapper : list) {
+            if (instanceWrapper.instance.equals(instance))
+                return instanceWrapper.runTime;
+        }
+        return null;
+    }
+
     private static class InstanceWrapper {
 
         Object instance;
@@ -84,12 +92,12 @@ public class StateManager {
             }
             for (Method method : aClass.getMethods()) {
                 ChangeIn changeIn = method.getAnnotation(ChangeIn.class);
-                if(changeIn!=null){
-                    changeInMap.put(changeIn.value(),method);
+                if (changeIn != null) {
+                    changeInMap.put(changeIn.value(), method);
                 }
                 ChangeOut changeOut = method.getAnnotation(ChangeOut.class);
-                if(changeOut!=null){
-                    changeOutMap.put(changeIn.value(),method);
+                if (changeOut != null) {
+                    changeOutMap.put(changeIn.value(), method);
                 }
             }
             for (Field field : instance.getClass().getFields()) {
@@ -111,7 +119,7 @@ public class StateManager {
         }
 
         private void changeIn(GameState gameState) {
-            if(changeInMap.containsKey(gameState)){
+            if (changeInMap.containsKey(gameState)) {
                 try {
                     changeInMap.get(gameState).invoke(instance);
                 } catch (IllegalAccessException e) {
@@ -123,7 +131,7 @@ public class StateManager {
         }
 
         private void changeOut(GameState gameState) {
-            if(changeOutMap.containsKey(gameState)){
+            if (changeOutMap.containsKey(gameState)) {
                 try {
                     changeOutMap.get(gameState).invoke(instance);
                 } catch (IllegalAccessException e) {

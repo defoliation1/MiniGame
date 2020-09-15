@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 public class Setup {
 
@@ -52,9 +53,9 @@ public class Setup {
                 for (SetupWrapper setupWrapper : list) {
                     ItemStack itemStack = new ItemStack(setupWrapper.itemId);
                     ItemMeta itemMeta = itemStack.getItemMeta();
-                    itemMeta.setDisplayName(getStateColor(setupWrapper.state) + setupWrapper.name);
+                    itemMeta.setDisplayName(getStateColor(setupWrapper.stateSupplier.get()) + setupWrapper.name);
                     List<String> lore = new ArrayList<>();
-                    lore.addAll(setupWrapper.lore);
+                    lore.addAll(setupWrapper.lore.get());
                     lore.add(" ");
                     lore.add("名字为§4红,意为还未设置，名字为§a绿，则为已设置");
                     lore.add("已设置的配置项可点击并重新设置");
@@ -64,6 +65,8 @@ public class Setup {
                 }
             });
         }
+        if (player == null)
+            return;
         ui.open(player);
     }
 
@@ -77,11 +80,11 @@ public class Setup {
         return "";
     }
 
-    public Setup addConfig(String name, SetupState setupState, Request onClick) {
-        return addConfig(name, defaultLore, setupState, onClick);
+    public Setup addConfig(String name, Supplier<SetupState> setupState, Request onClick) {
+        return addConfig(name, () -> defaultLore, setupState, onClick);
     }
 
-    public Setup addConfig(String name, List<String> lore, SetupState state, Request onClick) {
+    public Setup addConfig(String name, Supplier<List<String>> lore, Supplier<SetupState> state, Request onClick) {
         if (list.stream().filter(setupWrapper -> setupWrapper.name.equals(name)).findAny().isPresent()) {
             throw new IllegalArgumentException("配置项: " + name + " 已存在,不可重复添加");
         }
@@ -89,30 +92,44 @@ public class Setup {
         return this;
     }
 
-    public void setSetupState(String name, SetupState state) {
-        list.stream()
-                .filter(setupWrapper -> setupWrapper.name.equals(name))
-                .findAny()
-                .ifPresent(setupWrapper -> setupWrapper.state = state);
+    public void removeConfig(String name) {
+        for (SetupWrapper setupWrapper : list) {
+            if (setupWrapper.name.equals(name)) {
+                list.remove(setupWrapper);
+                return;
+            }
+        }
     }
 
     private class SetupWrapper {
         String name;
         int itemId = atomicInteger.getAndIncrement();
-        List<String> lore;
-        SetupState state;
+        Supplier<List<String>> lore;
+        Supplier<SetupState> stateSupplier;
         Request onClick;
 
-        public SetupWrapper(String name, List<String> lore, SetupState state, Request onClick) {
+        public SetupWrapper(String name, Supplier<List<String>> lore, Supplier<SetupState> stateSupplier, Request onClick) {
             this.name = name;
             this.lore = lore;
-            this.state = state;
+            this.stateSupplier = stateSupplier;
             this.onClick = onClick;
         }
     }
 
     public enum SetupState {
         NEED_SETUP, COMPLETE
+    }
+
+    public static Supplier<SetupState> notZero(Supplier<Integer> supplier) {
+        return () -> supplier.get() == 0 ? SetupState.NEED_SETUP : SetupState.COMPLETE;
+    }
+
+    public static Supplier<SetupState> notNull(Supplier<Object> supplier) {
+        return () -> supplier.get() == null ? SetupState.NEED_SETUP : SetupState.COMPLETE;
+    }
+
+    public static Supplier<SetupState> booleanState(Supplier<Boolean> supplier) {
+        return () -> supplier.get() ? SetupState.NEED_SETUP : SetupState.COMPLETE;
     }
 
 }
