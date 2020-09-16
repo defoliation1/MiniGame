@@ -49,7 +49,7 @@ public class PlayerState {
 
     public static Consumer<Player> fullState() {
         return player -> {
-            player.setHealth(20);
+            player.setHealth(player.getMaxHealth());
             player.setFoodLevel(20);
             player.setSaturation(20);
             player.setFireTicks(0);
