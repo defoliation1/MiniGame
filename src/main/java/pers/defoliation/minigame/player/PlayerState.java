@@ -1,7 +1,9 @@
 package pers.defoliation.minigame.player;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
+import pers.defoliation.minigame.MiniGame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +70,22 @@ public class PlayerState {
         return player -> {
             player.setExp(0);
             player.setLevel(0);
+        };
+    }
+
+    public static Consumer<Player> hidePlayer() {
+        return player -> {
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                onlinePlayer.hidePlayer(MiniGame.INSTANCE, player);
+            }
+        };
+    }
+
+    public static Consumer<Player> showPlayer() {
+        return player -> {
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                onlinePlayer.showPlayer(MiniGame.INSTANCE, player);
+            }
         };
     }
 
