@@ -97,7 +97,7 @@ public class StateManager {
                 }
                 ChangeOut changeOut = method.getAnnotation(ChangeOut.class);
                 if (changeOut != null) {
-                    changeOutMap.put(changeIn.value(), method);
+                    changeOutMap.put(changeOut.value(), method);
                 }
             }
             for (Field field : instance.getClass().getFields()) {
