@@ -1,6 +1,7 @@
 package pers.defoliation.minigame.config.setup;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -26,6 +27,7 @@ public class Setup {
 
     private UI ui;
     private Inventory inventory;
+    private int initSize;
 
     public Setup() {
     }
@@ -35,13 +37,16 @@ public class Setup {
     }
 
     public void startSetup(Player player) {
-        if (ui == null || list.size() > inventory.getSize()) {
+        if (ui == null || list.size() != initSize) {
+            initSize = list.size();
+            int inventorySize = list.isEmpty() ? 9 : ((list.size() + 8) / 9) * 9;
+            inventory = Bukkit.createInventory(null, inventorySize, title);
             ui = new UI(inventory);
-            inventory = Bukkit.createInventory(player, (list.size() + 8 / 9) * 9, title);
             ui.setAllowOperateInventory(false);
 
-            for (int i = 0; i < inventory.getSize(); i++) {
-                Slot slot = new Slot(i);
+            for (int i = 0; i < list.size(); i++) {
+                Slot slot = new SetupSlot(i);
+                ui.addSlot(slot);
                 slot.setOnClick(event -> {
                     event.getWhoClicked().closeInventory();
                     Conversation conversation = new Conversation(MiniGame.INSTANCE);
@@ -49,25 +54,23 @@ public class Setup {
                     conversation.start((Player) event.getWhoClicked());
                 });
             }
-            ui.setOnOpen((ui1, humanEntity) -> {
-                for (SetupWrapper setupWrapper : list) {
-                    ItemStack itemStack = new ItemStack(setupWrapper.itemId);
-                    ItemMeta itemMeta = itemStack.getItemMeta();
-                    itemMeta.setDisplayName(getStateColor(setupWrapper.stateSupplier.get()) + setupWrapper.name);
-                    List<String> lore = new ArrayList<>();
-                    lore.addAll(setupWrapper.lore.get());
-                    lore.add(" ");
-                    lore.add("名字为§4红,意为还未设置，名字为§a绿，则为已设置");
-                    lore.add("已设置的配置项可点击并重新设置");
-                    itemMeta.setLore(lore);
-                    itemStack.setItemMeta(itemMeta);
-                    inventory.setItem(setupWrapper.itemId - 1, itemStack);
-                }
-            });
         }
         if (player == null)
             return;
         ui.open(player);
+    }
+
+    private class SetupSlot extends Slot {
+
+        public SetupSlot(int slot) {
+            super(slot);
+        }
+
+        @Override
+        protected void updateItem() {
+            itemStack = list.get(getSlot()).getItem();
+            super.updateItem();
+        }
     }
 
     private static String getStateColor(SetupState state) {
@@ -103,7 +106,7 @@ public class Setup {
 
     private class SetupWrapper {
         String name;
-        int itemId = atomicInteger.getAndIncrement();
+        int itemId;
         Supplier<List<String>> lore;
         Supplier<SetupState> stateSupplier;
         Request onClick;
@@ -113,6 +116,29 @@ public class Setup {
             this.lore = lore;
             this.stateSupplier = stateSupplier;
             this.onClick = onClick;
+            setId();
+        }
+
+        public void setId() {
+            int id = atomicInteger.getAndIncrement();
+            while (!Material.getMaterial(id).isItem()) {
+                id = atomicInteger.getAndIncrement();
+            }
+            itemId = id;
+        }
+
+        public ItemStack getItem() {
+            ItemStack itemStack = new ItemStack(itemId);
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            itemMeta.setDisplayName(getStateColor(stateSupplier.get()) + name);
+            List<String> lore = new ArrayList<>();
+            lore.addAll(this.lore.get());
+            lore.add(" ");
+            lore.add("名字为§4红,意为还未设置，名字为§a绿，则为已设置");
+            lore.add("已设置的配置项可点击并重新设置");
+            itemMeta.setLore(lore);
+            itemStack.setItemMeta(itemMeta);
+            return itemStack;
         }
     }
 
@@ -129,7 +155,7 @@ public class Setup {
     }
 
     public static Supplier<SetupState> booleanState(Supplier<Boolean> supplier) {
-        return () -> supplier.get() ? SetupState.NEED_SETUP : SetupState.COMPLETE;
+        return () -> supplier.get() ? SetupState.COMPLETE : SetupState.NEED_SETUP;
     }
 
 }

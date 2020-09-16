@@ -13,7 +13,7 @@ public class Slot implements Cloneable{
 	private final int slot;
 	
 	private UI parent;
-	private ItemStack itemStack;
+	protected ItemStack itemStack;
 	private boolean operable;
 	private Consumer<InventoryClickEvent> onClick;
 	private Consumer<InventoryClickEvent> onLeftClick;
