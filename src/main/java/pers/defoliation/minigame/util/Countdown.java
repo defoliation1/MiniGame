@@ -21,8 +21,7 @@ public class Countdown<T> {
 
     private HashMap<Integer, BiConsumer<T, AtomicInteger>> secondTask = new HashMap<>();
 
-    private Countdown(JavaPlugin plugin) {
-        Bukkit.getScheduler().runTaskTimer(plugin, this::second, 20, 20);
+    private Countdown() {
     }
 
     public void second() {
@@ -48,7 +47,7 @@ public class Countdown<T> {
 
     public void cancel(T t) {
         for (CountdownData countdownData : countdownDataList) {
-            if(countdownData.t.equals(t)){
+            if (countdownData.t.equals(t)) {
                 countdownDataList.remove(countdownData);
                 return;
             }
@@ -77,10 +76,12 @@ public class Countdown<T> {
 
     public static class CountdownBuilder<T> {
 
+        private JavaPlugin plugin;
         private Countdown<T> countdown;
 
         public CountdownBuilder(JavaPlugin plugin) {
-            this.countdown = new Countdown<>(plugin);
+            this.countdown = new Countdown<>();
+            this.plugin = plugin;
         }
 
         public CountdownBuilder<T> whenEnd(Consumer<T> consumer) {
@@ -103,6 +104,7 @@ public class Countdown<T> {
         }
 
         public Countdown<T> build() {
+            Bukkit.getScheduler().runTaskTimer(plugin, () -> countdown.second(), 20, 20);
             return countdown;
         }
 
