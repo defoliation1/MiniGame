@@ -27,7 +27,7 @@ public class Countdown<T> {
     public void second() {
         List<CountdownData> removeList = new ArrayList<>();
         for (CountdownData countdownData : countdownDataList) {
-            if (countdownData.atomicInteger.incrementAndGet() <= 0) {
+            if (countdownData.atomicInteger.decrementAndGet() <= 0) {
                 whenEnd.accept(countdownData.t);
             } else {
                 perSecondTask.forEach(consumer -> consumer.accept(countdownData.t, countdownData.atomicInteger));
