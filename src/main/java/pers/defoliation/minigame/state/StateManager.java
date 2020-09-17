@@ -121,7 +121,7 @@ public class StateManager {
         private void changeIn(GameState gameState) {
             if (changeInMap.containsKey(gameState)) {
                 try {
-                    changeInMap.get(gameState).invoke(instance);
+                    changeInMap.remove(gameState).invoke(instance);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 } catch (InvocationTargetException e) {
@@ -133,7 +133,7 @@ public class StateManager {
         private void changeOut(GameState gameState) {
             if (changeOutMap.containsKey(gameState)) {
                 try {
-                    changeOutMap.get(gameState).invoke(instance);
+                    changeOutMap.remove(gameState).invoke(instance);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 } catch (InvocationTargetException e) {
