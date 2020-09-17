@@ -113,9 +113,11 @@ public class StateManager {
         }
 
         private void changeState(GameState gameState) {
-            changeOut(this.state);
+            if (this.state != gameState) {
+                changeOut(this.state);
+                changeIn(gameState);
+            }
             this.state = gameState;
-            changeIn(gameState);
         }
 
         private void changeIn(GameState gameState) {
