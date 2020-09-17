@@ -36,7 +36,8 @@ public class Countdown<T> {
                 removeList.add(countdownData);
             }
         }
-        countdownDataList.removeAll(removeList);
+        if (!removeList.isEmpty())
+            countdownDataList.removeAll(removeList);
     }
 
     public void start(int countdownTime, T... t) {
