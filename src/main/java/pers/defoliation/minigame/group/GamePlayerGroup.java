@@ -6,6 +6,7 @@ import pers.defoliation.minigame.player.GamePlayer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public abstract class GamePlayerGroup<T extends Team> {
@@ -70,6 +71,10 @@ public abstract class GamePlayerGroup<T extends Team> {
             teamPlayers.addAll(team.getAlivePlayers());
         }
         return teamPlayers;
+    }
+
+    public List<GamePlayer> getEffectPlayers() {
+        return getPlayers().stream().filter(GamePlayer::isEffective).collect(Collectors.toList());
     }
 
     public int getMaxPlayer() {

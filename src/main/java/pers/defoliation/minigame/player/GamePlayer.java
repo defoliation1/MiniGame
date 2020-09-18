@@ -17,7 +17,7 @@ public class GamePlayer {
     private Game game;
     private boolean isSpectator;
 
-    private HashMap<String, Object> playerData;
+    private HashMap<String, Object> playerData = new HashMap<>();
 
     private GamePlayer(String playerName) {
         this.playerName = playerName;
