@@ -7,12 +7,16 @@ import pers.defoliation.minigame.config.GameConfigurationSection;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class Game {
 
     private String gameName;
     private GameConfigurationSection config;
+
+    //在游戏中产生的数据，用于scoreboard等
+    private HashMap<String, Object> gameData = new HashMap<>();
 
     public Game(String gameName) {
         this.gameName = gameName;
@@ -79,5 +83,13 @@ public abstract class Game {
     public abstract void join(Player player);
 
     public abstract void leave(Player player);
+
+    public <T> T getData(String key) {
+        return (T) gameData.get(key);
+    }
+
+    public void putData(String key, Object value) {
+        this.gameData.put(key, value);
+    }
 
 }

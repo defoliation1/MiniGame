@@ -17,6 +17,8 @@ public class GamePlayer {
     private Game game;
     private boolean isSpectator;
 
+    private HashMap<String, Object> playerData;
+
     private GamePlayer(String playerName) {
         this.playerName = playerName;
     }
@@ -59,6 +61,14 @@ public class GamePlayer {
 
     public void setSpectator(boolean spectator) {
         isSpectator = spectator;
+    }
+
+    public <T> T getData(String key) {
+        return (T) playerData.get(key);
+    }
+
+    public void setData(String key, Object value) {
+        playerData.put(key, value);
     }
 
     @Override
