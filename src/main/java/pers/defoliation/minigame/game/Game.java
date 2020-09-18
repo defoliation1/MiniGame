@@ -92,4 +92,8 @@ public abstract class Game {
         this.gameData.put(key, value);
     }
 
+    public void clearData(){
+        this.gameData.clear();
+    }
+
 }

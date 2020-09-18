@@ -71,6 +71,10 @@ public class GamePlayer {
         playerData.put(key, value);
     }
 
+    public void clearData() {
+        playerData.clear();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
