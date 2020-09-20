@@ -65,6 +65,10 @@ public abstract class GamePlayerGroup<T extends Team> {
         this.teams.add(team);
     }
 
+    public void removeTeam(T team) {
+        this.teams.remove(team);
+    }
+
     public List<Player> getAlivePlayers() {
         List<Player> teamPlayers = new ArrayList<>();
         for (Team team : teams) {
