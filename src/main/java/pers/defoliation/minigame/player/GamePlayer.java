@@ -67,6 +67,10 @@ public class GamePlayer {
         return (T) playerData.get(key);
     }
 
+    public HashMap<String, Object> getPlayerData() {
+        return playerData;
+    }
+
     public void setData(String key, Object value) {
         playerData.put(key, value);
     }
