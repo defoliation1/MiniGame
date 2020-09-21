@@ -71,7 +71,7 @@ public class MiniGameEventHandler {
     public <T extends Event> MiniGameEventHandler addHandle(Class<T> event, Consumer<T> consumer, Function<T, Boolean> ignore) {
         getEventListeners(event).register(new RegisteredListener(new Listener() {
         }, (listener, event1) -> {
-            if (enable && !ignore.apply((T) event1)) {
+            if (enable && !ignore.apply((T) event1) && event.isAssignableFrom(event1.getClass())) {
                 acceptEvent(event1, consumer);
             }
         }, EventPriority.NORMAL, plugin, false));
@@ -112,11 +112,7 @@ public class MiniGameEventHandler {
             clazz.getDeclaredMethod("getHandlerList");
             return clazz;
         } catch (NoSuchMethodException var2) {
-            if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Event.class) && Event.class.isAssignableFrom(clazz.getSuperclass())) {
-                return this.getRegistrationClass(clazz.getSuperclass().asSubclass(Event.class));
-            } else {
-                throw new IllegalPluginAccessException("Unable to find handler list for event " + clazz.getName() + ". Static getHandlerList method required!");
-            }
+            throw new IllegalPluginAccessException("Unable to find handler list for event " + clazz.getName() + ". Static getHandlerList method required!");
         }
     }
 
