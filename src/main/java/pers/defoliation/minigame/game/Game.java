@@ -96,4 +96,7 @@ public abstract class Game {
         this.gameData.clear();
     }
 
+    public HashMap<String, Object> getGameData() {
+        return gameData;
+    }
 }
