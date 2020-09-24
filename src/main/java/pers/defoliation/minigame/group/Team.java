@@ -33,18 +33,12 @@ public abstract class Team {
         return players.size() < getMaxPlayer();
     }
 
-    public void join(String player) {
-        players.add(GamePlayer.getGamePlayer(player));
+    public void join(GamePlayer player) {
+        players.add(player);
     }
 
-    public void leave(String player) {
-        GamePlayer leavePlayer = null;
-        for (GamePlayer gamePlayer : players) {
-            if (gamePlayer.getName().equals(player))
-                leavePlayer = gamePlayer;
-        }
-        if (leavePlayer != null)
-            players.remove(leavePlayer);
+    public void leave(GamePlayer player) {
+        players.remove(player);
     }
 
     public int getMaxPlayer() {
@@ -59,28 +53,24 @@ public abstract class Team {
         return players;
     }
 
-    public boolean contains(String name) {
-        for (GamePlayer player : players) {
-            if (player.getName().equals(name))
-                return true;
-        }
-        return false;
+    public boolean contains(GamePlayer player) {
+        return players.contains(player);
     }
 
-    public List<Player> getAlivePlayers(){
+    public List<Player> getAlivePlayers() {
         ArrayList<Player> players = new ArrayList<>();
         for (GamePlayer player : this.players) {
-            if(player.isOnline()&&!player.isSpectator()){
+            if (player.isOnline() && !player.isSpectator()) {
                 players.add(player.getPlayer());
             }
         }
         return players;
     }
 
-    public int getAlivePlayerNum(){
+    public int getAlivePlayerNum() {
         int i = 0;
         for (GamePlayer player : this.players) {
-            if(player.isOnline()&&!player.isSpectator()){
+            if (player.isOnline() && !player.isSpectator()) {
                 i++;
             }
         }

@@ -112,7 +112,7 @@ public abstract class GamePlayerGroup<T extends Team> {
 
     public void addSpectator(GamePlayer gamePlayer) {
         for (T team : teams) {
-            if (team.contains(gamePlayer.getName()))
+            if (team.contains(gamePlayer))
                 throw new IllegalStateException("玩家已在队伍内,加入观战失败 尝试加入的玩家: " + gamePlayer.getName());
         }
         spectators.add(gamePlayer);

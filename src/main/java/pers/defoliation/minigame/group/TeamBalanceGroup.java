@@ -17,7 +17,7 @@ public class TeamBalanceGroup<T extends Team> extends GamePlayerGroup<T> {
 
     @Override
     public void join(GamePlayer player) {
-        getTeams().get(0).join(player.getName());
+        getTeams().get(0).join(player);
         sortTeams();
         super.join(player);
     }
@@ -30,8 +30,8 @@ public class TeamBalanceGroup<T extends Team> extends GamePlayerGroup<T> {
     public void leave(GamePlayer player) {
         super.leave(player);
         for (Team team : getTeams()) {
-            if (team.contains(player.getName()))
-                team.leave(player.getName());
+            if (team.contains(player))
+                team.leave(player);
         }
         sortTeams();
         removeSpectator(player);

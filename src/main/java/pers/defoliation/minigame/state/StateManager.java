@@ -9,7 +9,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -24,7 +24,8 @@ public class StateManager {
             list.removeIf(instanceWrapper -> removeValue.contains(instanceWrapper.instance));
             removeValue.clear();
             for (InstanceWrapper instanceWrapper : list) {
-                Method method = instanceWrapper.methodMap.get(instanceWrapper.state);
+
+                Method method = instanceWrapper.methodMap.get(instanceWrapper.state.name());
                 GameState gameState = null;
                 try {
                     gameState = (GameState) method.invoke(instanceWrapper.instance, instanceWrapper.runTime);
@@ -71,9 +72,9 @@ public class StateManager {
     private static class InstanceWrapper {
 
         Object instance;
-        EnumMap<GameState, Method> methodMap = new EnumMap<>(GameState.class);
-        EnumMap<GameState, Method> changeOutMap = new EnumMap<>(GameState.class);
-        EnumMap<GameState, Method> changeInMap = new EnumMap<>(GameState.class);
+        HashMap<String, Method> methodMap = new HashMap<>();
+        HashMap<String, Method> changeOutMap = new HashMap<>();
+        HashMap<String, Method> changeInMap = new HashMap<>();
         Field stateField;
         AtomicInteger runTime = new AtomicInteger();
         GameState state;
@@ -85,7 +86,7 @@ public class StateManager {
             for (GameState enumConstant : GameState.values()) {
                 try {
                     Method method = aClass.getMethod(enumConstant.name().toLowerCase(), AtomicInteger.class);
-                    methodMap.put(enumConstant, method);
+                    methodMap.put(enumConstant.name(), method);
                 } catch (NoSuchMethodException e) {
                     e.printStackTrace();
                 }
@@ -93,11 +94,11 @@ public class StateManager {
             for (Method method : aClass.getMethods()) {
                 ChangeIn changeIn = method.getAnnotation(ChangeIn.class);
                 if (changeIn != null) {
-                    changeInMap.put(changeIn.value(), method);
+                    changeInMap.put(changeIn.value().name(), method);
                 }
                 ChangeOut changeOut = method.getAnnotation(ChangeOut.class);
                 if (changeOut != null) {
-                    changeOutMap.put(changeOut.value(), method);
+                    changeOutMap.put(changeOut.value().name(), method);
                 }
             }
             for (Field field : instance.getClass().getFields()) {
@@ -121,9 +122,9 @@ public class StateManager {
         }
 
         private void changeIn(GameState gameState) {
-            if (changeInMap.containsKey(gameState)) {
+            if (changeInMap.containsKey(gameState.name())) {
                 try {
-                    changeInMap.remove(gameState).invoke(instance);
+                    changeInMap.remove(gameState.name()).invoke(instance);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 } catch (InvocationTargetException e) {
@@ -133,9 +134,9 @@ public class StateManager {
         }
 
         private void changeOut(GameState gameState) {
-            if (changeOutMap.containsKey(gameState)) {
+            if (changeOutMap.containsKey(gameState.name())) {
                 try {
-                    changeOutMap.remove(gameState).invoke(instance);
+                    changeOutMap.remove(gameState.name()).invoke(instance);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 } catch (InvocationTargetException e) {

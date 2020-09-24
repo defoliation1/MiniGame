@@ -55,6 +55,7 @@ public class PlayerState {
             player.setFireTicks(0);
             player.resetPlayerTime();
             player.resetPlayerWeather();
+            player.setGlowing(false);
         };
     }
 

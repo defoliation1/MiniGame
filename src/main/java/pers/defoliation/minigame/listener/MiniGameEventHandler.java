@@ -112,7 +112,11 @@ public class MiniGameEventHandler {
             clazz.getDeclaredMethod("getHandlerList");
             return clazz;
         } catch (NoSuchMethodException var2) {
-            throw new IllegalPluginAccessException("Unable to find handler list for event " + clazz.getName() + ". Static getHandlerList method required!");
+            if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Event.class) && Event.class.isAssignableFrom(clazz.getSuperclass())) {
+                return this.getRegistrationClass(clazz.getSuperclass().asSubclass(Event.class));
+            } else {
+                throw new IllegalPluginAccessException("Unable to find handler list for event " + clazz.getName() + ". Static getHandlerList method required!");
+            }
         }
     }
 
