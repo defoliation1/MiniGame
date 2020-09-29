@@ -1,10 +1,14 @@
 package pers.defoliation.minigame.worldobject;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import pers.defoliation.minigame.conversation.request.setup.ChatSetup;
+import pers.defoliation.minigame.conversation.request.setup.RequestWithInfoSupplier;
+import pers.defoliation.minigame.ui.RequestWithInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class WorldObjectManager {
+public class WorldObjectManager implements RequestWithInfoSupplier {
 
     private World world;
     private File configFile;
@@ -85,6 +89,18 @@ public class WorldObjectManager {
 
     public void removeWorldObject(WorldObject worldObject) {
         worldObjectHashMap.remove(worldObject.getName());
+    }
+
+    @Override
+    public List<RequestWithInfo> getRequestWithInfos() {
+        return worldObjectHashMap.values().stream().map(WorldObjectManager::object2Request).collect(Collectors.toList());
+    }
+
+    private static RequestWithInfo object2Request(WorldObject worldObject) {
+        ChatSetup chatSetup = new ChatSetup(worldObject.getName() + " 设置");
+        chatSetup.addRequest(worldObject.getRequestWithInfos());
+        RequestWithInfo requestWithInfo = new RequestWithInfo(chatSetup, Material.STONE, () -> worldObject.getName(), () -> worldObject.getInfo());
+        return requestWithInfo;
     }
 
 }

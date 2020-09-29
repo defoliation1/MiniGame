@@ -34,6 +34,10 @@ public class ChatSetup extends RequestBase implements Setup {
     private final Listener listener = new RequestListener();
     private Consumer<Conversation> quitConsumer = c -> c.cancel();
 
+    public ChatSetup(String title) {
+        this(title, "");
+    }
+
     public ChatSetup(String title, String bottom) {
         this.title = title;
         this.bottom = bottom;
@@ -157,6 +161,7 @@ public class ChatSetup extends RequestBase implements Setup {
                     if (requestWithInfo.getRequest() instanceof Setup) {
                         ((Setup) requestWithInfo.getRequest()).setOnQuit(c -> c.insertRequest(ChatSetup.this));
                     } else {
+                        getConversation().insertRequest(ChatSetup.this);
                         getConversation().insertRequest(requestWithInfo.getRequest());
                     }
                     setCompleted(true);
