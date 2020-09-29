@@ -27,7 +27,7 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
     private File configFile;
     private HashMap<String, WorldObject> worldObjectHashMap = new HashMap<>();
 
-    public WorldObjectManager(JavaPlugin plugin, World world) {
+    private WorldObjectManager(JavaPlugin plugin, World world) {
         this.world = world;
         configFile = new File(plugin.getDataFolder(), "worldObject" + File.pathSeparator + world.getName());
         if (configFile.exists()) {
