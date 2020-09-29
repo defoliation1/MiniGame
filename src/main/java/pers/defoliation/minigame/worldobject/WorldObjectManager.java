@@ -12,11 +12,16 @@ import pers.defoliation.minigame.ui.RequestWithInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class WorldObjectManager implements RequestWithInfoSupplier {
+
+    private static HashMap<String, WorldObjectManager> map = new HashMap<>();
+
+    private static List<WorldObjectSupplier> suppliers = new ArrayList<>();
 
     private World world;
     private File configFile;
@@ -101,6 +106,18 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
         chatSetup.addRequest(worldObject.getRequestWithInfos());
         RequestWithInfo requestWithInfo = new RequestWithInfo(chatSetup, Material.STONE, () -> worldObject.getName(), () -> worldObject.getInfo(), () -> true);
         return requestWithInfo;
+    }
+
+    public static WorldObjectManager getWorldObjectManager(JavaPlugin javaPlugin, World world) {
+        return map.computeIfAbsent(world.getName(), s -> new WorldObjectManager(javaPlugin, world));
+    }
+
+    public static void addSupplier(WorldObjectSupplier supplier) {
+        suppliers.add(supplier);
+    }
+
+    public static List<WorldObjectSupplier> getSuppliers() {
+        return suppliers;
     }
 
 }
