@@ -151,4 +151,6 @@ public interface Request<T> {
 	void setConversation(Conversation conversation);
 
     void sendMessage(String message);
+
+    void setOnEnd(Consumer<Request<T>> onEnd);
 }
