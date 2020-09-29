@@ -13,7 +13,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import pers.defoliation.minigame.conversation.Conversation;
-import pers.defoliation.minigame.conversation.request.Request;
 import pers.defoliation.minigame.conversation.request.RequestBase;
 import pers.defoliation.minigame.ui.RequestWithInfo;
 import pers.defoliation.minigame.util.ChatUtils;
