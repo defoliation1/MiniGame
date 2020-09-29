@@ -22,7 +22,6 @@ public abstract class RequestBase<T> implements Request<T> {
     private BiPredicate<Request<T>, T> validator;
     private Consumer<Request<T>> onValidateFailed;
     private Consumer<Request<T>> onTimeout;
-    private Consumer<Request<T>> onEnd;
 
     private boolean started = false;
     private boolean completed = false;
@@ -183,8 +182,6 @@ public abstract class RequestBase<T> implements Request<T> {
             dispose();
             if (onComplete != null)
                 onComplete.accept(this);
-            if (onEnd != null)
-                onEnd.accept(this);
             getConversation().next();
         }
     }
@@ -239,8 +236,4 @@ public abstract class RequestBase<T> implements Request<T> {
             getConversation().getPlayer().sendMessage(message);
     }
 
-    @Override
-    public void setOnEnd(Consumer<Request<T>> onEnd) {
-        this.onEnd = onEnd;
-    }
 }

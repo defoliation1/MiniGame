@@ -158,9 +158,7 @@ public class ChatSetup extends RequestBase implements Setup {
                     if (requestWithInfo.getRequest() instanceof Setup) {
                         ((Setup) requestWithInfo.getRequest()).setOnQuit(c -> c.insertRequest(ChatSetup.this));
                     } else {
-                        Request request = requestWithInfo.getRequest();
-                        request.setOnEnd(r -> request.getConversation().insertRequest(ChatSetup.this));
-                        getConversation().insertRequest(request);
+                        getConversation().insertRequest(requestWithInfo.getRequest());
                     }
                     setCompleted(true);
                 } catch (NumberFormatException e) {

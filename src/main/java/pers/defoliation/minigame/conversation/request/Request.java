@@ -152,5 +152,4 @@ public interface Request<T> {
 
     void sendMessage(String message);
 
-    void setOnEnd(Consumer<Request<T>> onEnd);
 }
