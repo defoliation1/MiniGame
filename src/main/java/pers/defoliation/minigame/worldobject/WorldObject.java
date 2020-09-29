@@ -20,7 +20,7 @@ public abstract class WorldObject implements RequestWithInfoSupplier {
     @Override
     public List<RequestWithInfo> getRequestWithInfos() {
         ArrayList<RequestWithInfo> list = new ArrayList<>();
-        list.add(RequestWithInfo.wrap(RequestString.newRequestString().setOnComplete(r -> name = r.getResult().get()), Material.STONE, () -> "物体名称", () -> Arrays.asList("主要用于区分其他物品，故要保证唯一")));
+        list.add(RequestWithInfo.wrap(RequestString.newRequestString().setOnComplete(r -> name = r.getResult().get()), Material.STONE, () -> "物体名称", () -> Arrays.asList("主要用于区分其他物品，故要保证唯一"), () -> name != null));
         return list;
     }
 
@@ -55,7 +55,7 @@ public abstract class WorldObject implements RequestWithInfoSupplier {
     public List<String> getInfo() {
         ArrayList<String> list = new ArrayList<>();
         list.add("组件名: " + getName());
-        list.add("类名: "+getClass().getName());
+        list.add("类名: " + getClass().getName());
         list.add("主要位置: " + getMainLocation().toVector().toString());
         return list;
     }

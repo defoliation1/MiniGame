@@ -24,7 +24,7 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
 
     public WorldObjectManager(JavaPlugin plugin, World world) {
         this.world = world;
-        configFile = new File(plugin.getDataFolder(), world.getName());
+        configFile = new File(plugin.getDataFolder(), "worldObject" + File.pathSeparator + world.getName());
         if (configFile.exists()) {
             for (File file : configFile.listFiles()) {
                 YamlConfiguration yamlConfiguration = new YamlConfiguration();
@@ -99,7 +99,7 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
     private static RequestWithInfo object2Request(WorldObject worldObject) {
         ChatSetup chatSetup = new ChatSetup(worldObject.getName() + " 设置");
         chatSetup.addRequest(worldObject.getRequestWithInfos());
-        RequestWithInfo requestWithInfo = new RequestWithInfo(chatSetup, Material.STONE, () -> worldObject.getName(), () -> worldObject.getInfo());
+        RequestWithInfo requestWithInfo = new RequestWithInfo(chatSetup, Material.STONE, () -> worldObject.getName(), () -> worldObject.getInfo(), () -> true);
         return requestWithInfo;
     }
 
