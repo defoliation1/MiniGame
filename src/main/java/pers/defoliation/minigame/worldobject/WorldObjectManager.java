@@ -47,6 +47,7 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
             worldObjectHashMap.clear();
             for (File file : configFile.listFiles()) {
                 YamlConfiguration yamlConfiguration = new YamlConfiguration();
+                Bukkit.getLogger().info("deserialize: "+file.toString());
                 try {
                     yamlConfiguration.load(file);
                 } catch (IOException e) {
@@ -62,9 +63,9 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
                         object.deserialize(yamlConfiguration);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Bukkit.getLogger().info(file.getName()+" deserialize fail");
-                        Bukkit.getLogger().info(file.getName()+" deserialize fail");
-                        Bukkit.getLogger().info(file.getName()+" deserialize fail");
+                        Bukkit.getLogger().info(file.toString()+" deserialize fail");
+                        Bukkit.getLogger().info(file.toString()+" deserialize fail");
+                        Bukkit.getLogger().info(file.toString()+" deserialize fail");
                         continue;
                     }
                     worldObjectHashMap.put(object.getName(), object);
