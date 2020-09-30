@@ -16,6 +16,6 @@ public @interface ObjectField {
 
     Material material() default Material.STONE;
 
-    short materialData() default 0;
+    byte materialData() default 0;
 
 }

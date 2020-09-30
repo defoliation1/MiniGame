@@ -1,5 +1,6 @@
 package pers.defoliation.minigame.worldobject;
 
+import org.bukkit.inventory.ItemStack;
 import pers.defoliation.minigame.conversation.request.Request;
 
 import java.lang.reflect.Field;
@@ -14,6 +15,7 @@ public class WorldObjectField {
     public final String fieldName;
     public final String name;
     public final String[] desc;
+    public final ItemStack itemStack;
     private final Field field;
     private final Object instance;
 
@@ -21,12 +23,13 @@ public class WorldObjectField {
     private Request request;
     private Supplier<Boolean> setup;
 
-    private WorldObjectField(String fieldName, String name, String[] desc, Field field, Object instance) {
+    private WorldObjectField(String fieldName, String name, String[] desc, ItemStack itemStack, Field field, Object instance) {
         this.fieldName = fieldName;
         this.name = name;
         this.field = field;
         this.instance = instance;
         this.desc = desc;
+        this.itemStack = itemStack;
         field.setAccessible(true);
         field2String = () -> {
             try {
@@ -82,7 +85,7 @@ public class WorldObjectField {
             for (Field declaredField : instance.getClass().getDeclaredFields()) {
                 ObjectField annotation = declaredField.getAnnotation(ObjectField.class);
                 if (annotation != null) {
-                    WorldObjectField worldObjectField = new WorldObjectField(declaredField.getName(), annotation.value(), annotation.desc(), declaredField, instance);
+                    WorldObjectField worldObjectField = new WorldObjectField(declaredField.getName(), annotation.value(), annotation.desc(), new ItemStack(annotation.material().getId(), 1, (short) 0, annotation.materialData()), declaredField, instance);
                     worldObjectFieldList.add(worldObjectField);
                 }
             }
