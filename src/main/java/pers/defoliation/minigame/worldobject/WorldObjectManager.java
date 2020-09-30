@@ -60,7 +60,7 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
                 try {
                     WorldObject object = (WorldObject) Class.forName(className).newInstance();
                     try {
-                        object.deserialize(yamlConfiguration);
+                        object.deserialize(yamlConfiguration.getConfigurationSection("object"));
                     } catch (Exception e) {
                         e.printStackTrace();
                         Bukkit.getLogger().info(file.toString() + " deserialize fail");
