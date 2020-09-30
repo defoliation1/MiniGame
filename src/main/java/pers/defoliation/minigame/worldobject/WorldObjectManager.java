@@ -8,8 +8,6 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import pers.defoliation.minigame.conversation.request.setup.ChatSetup;
 import pers.defoliation.minigame.conversation.request.setup.RequestWithInfoSupplier;
@@ -20,7 +18,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class WorldObjectManager implements RequestWithInfoSupplier {
@@ -68,6 +65,7 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
                         Bukkit.getLogger().info(file.toString() + " deserialize fail");
                         continue;
                     }
+                    Bukkit.getLogger().info("put " + object.getName());
                     worldObjectHashMap.put(object.getName(), object);
                 } catch (InstantiationException e) {
                     e.printStackTrace();

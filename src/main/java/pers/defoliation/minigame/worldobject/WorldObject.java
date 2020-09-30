@@ -36,7 +36,11 @@ public abstract class WorldObject implements RequestWithInfoSupplier {
         return name;
     }
 
-//    public abstract List<GlowingObject> getGlowingObjects();
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    //    public abstract List<GlowingObject> getGlowingObjects();
 
     public abstract Location getMainLocation();
 
