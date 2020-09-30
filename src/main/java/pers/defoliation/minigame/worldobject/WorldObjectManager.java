@@ -1,9 +1,11 @@
 package pers.defoliation.minigame.worldobject;
 
 import net.md_5.bungee.api.chat.BaseComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
@@ -51,11 +53,20 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
                     e.printStackTrace();
                 } catch (InvalidConfigurationException e) {
                     e.printStackTrace();
+                    Bukkit.getLogger().info(file.toString());
                 }
-                String className = yamlConfiguration.getString("==");
+                String className = yamlConfiguration.getString("class");
                 try {
                     WorldObject object = (WorldObject) Class.forName(className).newInstance();
-                    object.deserialize(yamlConfiguration);
+                    try {
+                        object.deserialize(yamlConfiguration);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Bukkit.getLogger().info(file.getName()+" deserialize fail");
+                        Bukkit.getLogger().info(file.getName()+" deserialize fail");
+                        Bukkit.getLogger().info(file.getName()+" deserialize fail");
+                        continue;
+                    }
                     worldObjectHashMap.put(object.getName(), object);
                 } catch (InstantiationException e) {
                     e.printStackTrace();
@@ -79,8 +90,12 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
             }
         }
         YamlConfiguration yamlConfiguration = new YamlConfiguration();
-        object.serialize(yamlConfiguration);
-        yamlConfiguration.set("==", object.getClass().getName());
+        ConfigurationSection object1;
+        if (yamlConfiguration.contains("object")) {
+            object1 = yamlConfiguration.getConfigurationSection("object");
+        } else object1 = yamlConfiguration.createSection("object");
+        object.serialize(object1);
+        yamlConfiguration.set("class", object.getClass().getName());
         try {
             yamlConfiguration.save(file);
         } catch (IOException e) {
