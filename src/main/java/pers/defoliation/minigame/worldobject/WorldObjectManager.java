@@ -3,13 +3,17 @@ package pers.defoliation.minigame.worldobject;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import pers.defoliation.minigame.conversation.Conversation;
+import pers.defoliation.minigame.conversation.request.Request;
 import pers.defoliation.minigame.conversation.request.setup.ChatSetup;
 import pers.defoliation.minigame.conversation.request.setup.RequestWithInfoSupplier;
 import pers.defoliation.minigame.ui.RequestWithInfo;
@@ -21,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class WorldObjectManager implements RequestWithInfoSupplier {
+public class WorldObjectManager implements RequestWithInfoSupplier, Listener {
 
     private static HashMap<String, WorldObjectManager> map = new HashMap<>();
 
@@ -30,10 +34,12 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
     private World world;
     private File configFile;
     private HashMap<String, WorldObject> worldObjectHashMap = new HashMap<>();
+    protected final JavaPlugin plugin;
 //    private GlowingWorldObject glowingWorldObject = new GlowingWorldObject();
 
     private WorldObjectManager(JavaPlugin plugin, World world) {
         this.world = world;
+        this.plugin = plugin;
         configFile = new File(plugin.getDataFolder(), "worldObject");
         configFile = new File(configFile, world.getName());
         load();
@@ -78,6 +84,31 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
             }
         } else
             configFile.mkdirs();
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+        String substring = event.getMessage().substring(1);
+        if (substring.startsWith("worldobjectclickcommand")) {
+            String substring1 = substring.substring("worldobjectclickcommand".length());
+            String[] split = substring1.split(":");
+            int id = Integer.valueOf(split[0]);
+            for (WorldObject value : worldObjectHashMap.values()) {
+                if (value.id == id) {
+                    for (WorldObjectField worldObjectField : value.getFieldList()) {
+                        if (worldObjectField.fieldName.equals(split[1])) {
+                            Request setupRequest = worldObjectField.getSetupRequest();
+                            if (setupRequest != null) {
+                                Conversation conversation = new Conversation(plugin);
+                                conversation.addRequest(setupRequest);
+                                conversation.start(event.getPlayer());
+                            }
+                        }
+                    }
+                }
+            }
+            event.setCancelled(true);
+        }
     }
 
     public void save(WorldObject object) {
