@@ -34,8 +34,15 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
 
     private WorldObjectManager(JavaPlugin plugin, World world) {
         this.world = world;
-        configFile = new File(plugin.getDataFolder(), "worldObject" + File.pathSeparator + world.getName());
+        configFile = new File(plugin.getDataFolder(), "worldObject");
+        configFile = new File(configFile, world.getName());
+        load();
+    }
+
+    public void load() {
         if (configFile.exists()) {
+            worldObjectHashMap.values().forEach(WorldObject::unload);
+            worldObjectHashMap.clear();
             for (File file : configFile.listFiles()) {
                 YamlConfiguration yamlConfiguration = new YamlConfiguration();
                 try {
@@ -103,6 +110,10 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
 
     public void removeWorldObject(WorldObject worldObject) {
         worldObjectHashMap.remove(worldObject.getName());
+    }
+
+    public void addWorldObject(String name, WorldObject worldObject) {
+        worldObjectHashMap.put(name, worldObject);
     }
 
     @Override
