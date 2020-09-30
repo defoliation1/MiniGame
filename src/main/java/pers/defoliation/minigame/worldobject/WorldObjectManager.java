@@ -5,6 +5,8 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import pers.defoliation.minigame.conversation.request.setup.ChatSetup;
 import pers.defoliation.minigame.conversation.request.setup.RequestWithInfoSupplier;
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class WorldObjectManager implements RequestWithInfoSupplier {
@@ -26,6 +29,7 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
     private World world;
     private File configFile;
     private HashMap<String, WorldObject> worldObjectHashMap = new HashMap<>();
+    private GlowingWorldObject glowingWorldObject = new GlowingWorldObject();
 
     private WorldObjectManager(JavaPlugin plugin, World world) {
         this.world = world;
@@ -76,6 +80,10 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
         }
     }
 
+    public void save() {
+        worldObjectHashMap.values().forEach(this::save);
+    }
+
     public List<WorldObject> getNearLocationWorldObject(Location location, double distance) {
         return worldObjectHashMap.values().stream().filter(object -> object.getMainLocation().distance(location) < distance).collect(Collectors.toList());
     }
@@ -118,6 +126,45 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
 
     public static List<WorldObjectSupplier> getSuppliers() {
         return suppliers;
+    }
+/*
+    public static void sendGlowingBlock(Player p, Location loc, long lifetime){
+        Bukkit.getScheduler().scheduleSyncDelayedTask(MiniGame.INSTANCE, () -> {
+            PlayerConnection connection = ((CraftPlayer) p).getHandle().playerConnection;
+
+            EntityShulker shulker = new EntityShulker(((CraftWorld) loc.getWorld()).getHandle());
+            shulker.setLocation(loc.getX(), loc.getY(), loc.getZ(), 0, 0);
+            shulker.setFlag(6, true); //Glow
+            shulker.setFlag(5, true); //Invisibility
+
+            PacketPlayOutSpawnEntityLiving spawnPacket = new PacketPlayOutSpawnEntityLiving(shulker);
+            connection.sendPacket(spawnPacket);
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(MiniGame.INSTANCE, () -> {
+                PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(shulker.getId());
+                connection.sendPacket(destroyPacket);
+            }, lifetime + (long) ((Math.random() + 1) * 100));
+        }, (long) ((Math.random() + 1) * 40));
+    }*/
+
+    public GlowingWorldObject getGlowingWorldObject() {
+        return glowingWorldObject;
+    }
+
+    public class GlowingWorldObject {
+
+        public void glowingObjectNearPlayer(Player player, double distance) {
+
+        }
+
+        public Optional<WorldObject> getWorldObjectByGlowingEntity(Entity entity) {
+            return Optional.empty();
+        }
+
+        public Optional<WorldObject> getWorldObjectByGlowingLocation(Location location) {
+            return Optional.empty();
+        }
+
     }
 
 }
