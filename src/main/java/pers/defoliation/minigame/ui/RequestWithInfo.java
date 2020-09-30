@@ -48,6 +48,11 @@ public class RequestWithInfo {
         return isComplete.get();
     }
 
+    public static RequestWithInfo wrap(Request request, Supplier<String> title, Supplier<Boolean> isComplete) {
+        return wrap(request, Material.STONE, title, null, isComplete);
+    }
+
+
     public static RequestWithInfo wrap(Request request, Material material, Supplier<String> title, Supplier<Boolean> isComplete) {
         return wrap(request, material, title, null, isComplete);
     }

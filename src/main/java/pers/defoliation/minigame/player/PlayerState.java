@@ -56,6 +56,7 @@ public class PlayerState {
             player.resetPlayerTime();
             player.resetPlayerWeather();
             player.setGlowing(false);
+            player.setCollidable(true);
         };
     }
 
