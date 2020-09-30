@@ -77,6 +77,8 @@ public class PlayerState {
 
     public static Consumer<Player> hidePlayer() {
         return player -> {
+            if (player == null || !player.isOnline())
+                return;
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 onlinePlayer.hidePlayer(MiniGame.INSTANCE, player);
             }
@@ -85,6 +87,8 @@ public class PlayerState {
 
     public static Consumer<Player> showPlayer() {
         return player -> {
+            if (player == null || !player.isOnline())
+                return;
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 onlinePlayer.showPlayer(MiniGame.INSTANCE, player);
             }

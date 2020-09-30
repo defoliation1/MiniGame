@@ -20,7 +20,7 @@ public abstract class WorldObject implements RequestWithInfoSupplier {
     @Override
     public List<RequestWithInfo> getRequestWithInfos() {
         ArrayList<RequestWithInfo> list = new ArrayList<>();
-        list.add(RequestWithInfo.wrap(RequestString.newRequestString().setOnComplete(r -> name = r.getResult().get()), Material.STONE, () -> "物体名称", () -> Arrays.asList(new TextComponent("主要用于区分其他物品，故要保证唯一")), () -> name != null));
+        list.add(RequestWithInfo.wrap(RequestString.newRequestString().setOnComplete(r -> name = r.getResult().get()), Material.STONE, () -> "物体名称", () -> Arrays.asList("主要用于区分其他物品，故要保证唯一"), () -> name != null));
         return list;
     }
 

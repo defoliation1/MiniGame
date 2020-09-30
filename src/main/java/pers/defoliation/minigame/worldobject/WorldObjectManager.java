@@ -1,5 +1,6 @@
 package pers.defoliation.minigame.worldobject;
 
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -110,9 +111,13 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
     }
 
     private static RequestWithInfo object2Request(WorldObject worldObject) {
-        ChatSetup chatSetup = new ChatSetup(worldObject.getName() + " 设置");
+        ChatSetup chatSetup = new ChatSetup(worldObject.getName());
         chatSetup.addRequest(worldObject.getRequestWithInfos());
-        RequestWithInfo requestWithInfo = new RequestWithInfo(chatSetup, Material.STONE, () -> worldObject.getName(), () -> worldObject.getInfo(), () -> true);
+        List<String> list = new ArrayList<>();
+        for (BaseComponent baseComponent : worldObject.getInfo()) {
+            list.add(baseComponent.toPlainText());
+        }
+        RequestWithInfo requestWithInfo = new RequestWithInfo(chatSetup, Material.STONE, () -> worldObject.getName(), () -> list, () -> true);
         return requestWithInfo;
     }
 

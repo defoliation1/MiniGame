@@ -15,10 +15,10 @@ public class RequestWithInfo {
 
     private final Material material;
     private final Supplier<String> title;
-    private final Supplier<List<BaseComponent>> desc;
+    private final Supplier<List<String>> desc;
     private final Supplier<Boolean> isComplete;
 
-    public RequestWithInfo(Request request, Material material, Supplier<String> title, Supplier<List<BaseComponent>> desc, Supplier<Boolean> isComplete) {
+    public RequestWithInfo(Request request, Material material, Supplier<String> title, Supplier<List<String>> desc, Supplier<Boolean> isComplete) {
         this.request = request;
         this.title = title;
         this.material = material;
@@ -38,9 +38,9 @@ public class RequestWithInfo {
         return title.get();
     }
 
-    public List<BaseComponent> getDesc() {
+    public List<String> getDesc() {
         if (desc == null)
-            return Arrays.asList(new TextComponent("§r人懒无注释"));
+            return Arrays.asList("§r人懒无注释");
         return desc.get();
     }
 
@@ -52,12 +52,15 @@ public class RequestWithInfo {
         return wrap(request, Material.STONE, title, null, isComplete);
     }
 
+    public static RequestWithInfo wrap(Request request, Supplier<String> title, Supplier<List<String>> desc, Supplier<Boolean> isComplete) {
+        return wrap(request, Material.STONE, title, desc, isComplete);
+    }
 
     public static RequestWithInfo wrap(Request request, Material material, Supplier<String> title, Supplier<Boolean> isComplete) {
         return wrap(request, material, title, null, isComplete);
     }
 
-    public static RequestWithInfo wrap(Request request, Material material, Supplier<String> title, Supplier<List<BaseComponent>> desc, Supplier<Boolean> isComplete) {
+    public static RequestWithInfo wrap(Request request, Material material, Supplier<String> title, Supplier<List<String>> desc, Supplier<Boolean> isComplete) {
         return new RequestWithInfo(request, material, title, desc, isComplete);
     }
 
