@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import pers.defoliation.minigame.conversation.request.setup.ChatSetup;
 import pers.defoliation.minigame.conversation.request.setup.RequestWithInfoSupplier;
@@ -142,8 +143,9 @@ public class WorldObjectManager implements RequestWithInfoSupplier {
         for (BaseComponent baseComponent : worldObject.getInfo()) {
             list.add(baseComponent.toPlainText());
         }
-        RequestWithInfo requestWithInfo = new RequestWithInfo(chatSetup, Material.STONE, () -> worldObject.getName(), () -> list, () -> true);
-        return requestWithInfo;
+//        RequestWithInfo requestWithInfo = new RequestWithInfo(chatSetup,new ItemStack(), () -> worldObject.getName(), () -> list, () -> true);
+        return null;
+//        return requestWithInfo;
     }
 
     public static WorldObjectManager getWorldObjectManager(JavaPlugin javaPlugin, World world) {

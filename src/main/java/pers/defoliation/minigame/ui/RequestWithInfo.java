@@ -3,6 +3,7 @@ package pers.defoliation.minigame.ui;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import pers.defoliation.minigame.conversation.request.Request;
 
 import java.util.Arrays;
@@ -13,15 +14,15 @@ public class RequestWithInfo {
 
     private final Request request;
 
-    private final Material material;
+    private final ItemStack itemStack;
     private final Supplier<String> title;
     private final Supplier<List<String>> desc;
     private final Supplier<Boolean> isComplete;
 
-    public RequestWithInfo(Request request, Material material, Supplier<String> title, Supplier<List<String>> desc, Supplier<Boolean> isComplete) {
+    public RequestWithInfo(Request request, ItemStack itemStack, Supplier<String> title, Supplier<List<String>> desc, Supplier<Boolean> isComplete) {
         this.request = request;
         this.title = title;
-        this.material = material;
+        this.itemStack = itemStack;
         this.desc = desc;
         this.isComplete = isComplete;
     }
@@ -30,8 +31,8 @@ public class RequestWithInfo {
         return request;
     }
 
-    public Material getMaterial() {
-        return material;
+    public ItemStack getItemStack() {
+        return itemStack;
     }
 
     public String getTitle() {
@@ -49,19 +50,19 @@ public class RequestWithInfo {
     }
 
     public static RequestWithInfo wrap(Request request, Supplier<String> title, Supplier<Boolean> isComplete) {
-        return wrap(request, Material.STONE, title, null, isComplete);
+        return wrap(request, new ItemStack(Material.STONE), title, null, isComplete);
     }
 
     public static RequestWithInfo wrap(Request request, Supplier<String> title, Supplier<List<String>> desc, Supplier<Boolean> isComplete) {
-        return wrap(request, Material.STONE, title, desc, isComplete);
+        return wrap(request, new ItemStack(Material.STONE), title, desc, isComplete);
     }
 
-    public static RequestWithInfo wrap(Request request, Material material, Supplier<String> title, Supplier<Boolean> isComplete) {
-        return wrap(request, material, title, null, isComplete);
+    public static RequestWithInfo wrap(Request request, ItemStack itemStack, Supplier<String> title, Supplier<Boolean> isComplete) {
+        return wrap(request, itemStack, title, null, isComplete);
     }
 
-    public static RequestWithInfo wrap(Request request, Material material, Supplier<String> title, Supplier<List<String>> desc, Supplier<Boolean> isComplete) {
-        return new RequestWithInfo(request, material, title, desc, isComplete);
+    public static RequestWithInfo wrap(Request request, ItemStack itemStack, Supplier<String> title, Supplier<List<String>> desc, Supplier<Boolean> isComplete) {
+        return new RequestWithInfo(request, itemStack, title, desc, isComplete);
     }
 
 }

@@ -15,13 +15,24 @@ import java.util.List;
 
 public abstract class WorldObject implements RequestWithInfoSupplier {
 
+    @ObjectField("组件名")
     private String name;
+
+    private List<WorldObjectField> fieldList = new ArrayList<>();
+
+    public WorldObject() {
+        fieldList.addAll(WorldObjectField.getBuilder(this).build());
+    }
 
     @Override
     public List<RequestWithInfo> getRequestWithInfos() {
         ArrayList<RequestWithInfo> list = new ArrayList<>();
-        list.add(RequestWithInfo.wrap(RequestString.newRequestString().setOnComplete(r -> name = r.getResult().get()), Material.STONE, () -> "物体名称", () -> Arrays.asList("主要用于区分其他物品，故要保证唯一"), () -> name != null));
+        list.add(RequestWithInfo.wrap(RequestString.newRequestString().setOnComplete(r -> name = r.getResult().get()), () -> "物体名称", () -> Arrays.asList("主要用于区分其他物品，故要保证唯一"), () -> name != null));
         return list;
+    }
+
+    private RequestWithInfo field2Request(WorldObjectField field){
+        return RequestWithInfo.wrap(field.getSetupRequest(),()->field.name,()->Arrays.asList(field.desc),()->field.isSetup());
     }
 
     public void serialize(ConfigurationSection section) {
@@ -34,6 +45,10 @@ public abstract class WorldObject implements RequestWithInfoSupplier {
 
     public String getName() {
         return name;
+    }
+
+    protected void addWorldObjectField(List<WorldObjectField> worldObjectFields) {
+        fieldList.addAll(worldObjectFields);
     }
 
     public void setName(String name) {

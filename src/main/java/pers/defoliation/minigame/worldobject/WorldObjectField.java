@@ -80,7 +80,7 @@ public class WorldObjectField {
 
         private FieldBuilder(Object instance) {
             for (Field declaredField : instance.getClass().getDeclaredFields()) {
-                pers.defoliation.minigame.worldobject.Field annotation = declaredField.getAnnotation(pers.defoliation.minigame.worldobject.Field.class);
+                ObjectField annotation = declaredField.getAnnotation(ObjectField.class);
                 if (annotation != null) {
                     WorldObjectField worldObjectField = new WorldObjectField(declaredField.getName(), annotation.value(), annotation.desc(), declaredField, instance);
                     worldObjectFieldList.add(worldObjectField);
