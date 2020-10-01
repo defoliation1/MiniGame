@@ -56,10 +56,6 @@ public abstract class WorldObject implements RequestWithInfoSupplier {
         return fieldList;
     }
 
-    protected void addWorldObjectField(List<WorldObjectField> worldObjectFields) {
-        fieldList.addAll(worldObjectFields);
-    }
-
     public void setName(String name) {
         this.name = name;
     }

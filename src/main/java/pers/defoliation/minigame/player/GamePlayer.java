@@ -28,7 +28,7 @@ public class GamePlayer {
     }
 
     public boolean isOnline() {
-        return Bukkit.getOfflinePlayer(playerName).isOnline();
+        return Bukkit.getPlayer(playerName) != null;
     }
 
     public Player getPlayer() {
