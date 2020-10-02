@@ -112,7 +112,7 @@ public class WorldObjectManager implements RequestWithInfoSupplier, Listener {
     }
 
     public void save(WorldObject object) {
-        File file = new File(configFile, object.getName() + ".yml");
+        File file = getObjectConfigFile(object.getName());
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -134,6 +134,10 @@ public class WorldObjectManager implements RequestWithInfoSupplier, Listener {
         }
     }
 
+    private File getObjectConfigFile(String objectName) {
+        return new File(configFile, objectName + ".yml");
+    }
+
     public void save() {
         worldObjectHashMap.values().forEach(this::save);
     }
@@ -151,6 +155,9 @@ public class WorldObjectManager implements RequestWithInfoSupplier, Listener {
     }
 
     public void removeWorldObject(String name) {
+        File objectConfigFile = getObjectConfigFile(name);
+        if (objectConfigFile.exists())
+            objectConfigFile.delete();
         worldObjectHashMap.remove(name);
     }
 
