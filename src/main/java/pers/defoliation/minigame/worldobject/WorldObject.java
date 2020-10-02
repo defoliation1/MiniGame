@@ -32,6 +32,9 @@ public abstract class WorldObject implements RequestWithInfoSupplier {
     }
 
     public WorldObjectField.ObjectFieldBuilder setupField(WorldObjectField.ObjectFieldBuilder builder) {
+        builder.getField("name")
+                .setFieldToString(() -> name)
+                .fieldDone();
         return builder;
     }
 
@@ -74,6 +77,8 @@ public abstract class WorldObject implements RequestWithInfoSupplier {
 
     public List<BaseComponent> getInfo() {
         ArrayList<BaseComponent> list = new ArrayList<>();
+        list.add(new TextComponent("§4§l§m-------------------------------------"));
+        list.add(new TextComponent());
         list.add(new TextComponent("类名: " + getClass().getName()));
         list.add(new TextComponent("主要位置: " + getMainLocation().toVector().toString()));
         for (WorldObjectField worldObjectField : fieldList) {
@@ -86,7 +91,6 @@ public abstract class WorldObject implements RequestWithInfoSupplier {
         TextComponent textComponent = new TextComponent(field.name);
         textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/worldobjectclickcommand" + id + ":" + field.fieldName));
         textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Arrays.asList(field.desc).stream().map(m -> new TextComponent(m)).collect(Collectors.toList()).toArray(new BaseComponent[0])));
-        textComponent.setColor(ChatColor.WHITE);
         TextComponent textComponent1 = new TextComponent(": ");
         textComponent.addExtra(textComponent1);
         TextComponent textComponent2 = new TextComponent(field.getFieldToString());

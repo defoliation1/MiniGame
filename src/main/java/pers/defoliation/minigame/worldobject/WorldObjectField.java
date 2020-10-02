@@ -1,5 +1,6 @@
 package pers.defoliation.minigame.worldobject;
 
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import pers.defoliation.minigame.conversation.request.Request;
 
@@ -91,6 +92,7 @@ public class WorldObjectField {
             for (Field declaredField : clazz.getDeclaredFields()) {
                 ObjectField annotation = declaredField.getAnnotation(ObjectField.class);
                 if (annotation != null) {
+                    Bukkit.getLogger().info(declaredField.getName());
                     WorldObjectField worldObjectField = new WorldObjectField(declaredField.getName(), annotation.value(), annotation.desc(), new ItemStack(annotation.material().getId(), 1, (short) 0, annotation.materialData()), declaredField, instance);
                     worldObjectFieldList.add(worldObjectField);
                 }
@@ -103,7 +105,7 @@ public class WorldObjectField {
         }
 
         private Optional<WorldObjectField> getWorldObjectField(String name) {
-            return worldObjectFieldList.stream().filter(worldObjectField -> worldObjectField.name.equals(name)).findAny();
+            return worldObjectFieldList.stream().filter(worldObjectField -> worldObjectField.fieldName.equals(name)).findAny();
         }
 
         public List<WorldObjectField> build() {
