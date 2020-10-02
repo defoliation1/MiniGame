@@ -42,6 +42,7 @@ public class WorldObjectManager implements RequestWithInfoSupplier, Listener {
         this.plugin = plugin;
         configFile = new File(plugin.getDataFolder(), "worldObject");
         configFile = new File(configFile, world.getName());
+        Bukkit.getPluginManager().registerEvents(this, plugin);
         load();
     }
 
