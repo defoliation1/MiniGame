@@ -31,7 +31,7 @@ public abstract class WorldObject implements RequestWithInfoSupplier {
         fieldList.addAll(setupField(WorldObjectField.getBuilder(this)).build());
     }
 
-    public WorldObjectField.FieldBuilder setupField(WorldObjectField.FieldBuilder builder) {
+    public WorldObjectField.ObjectFieldBuilder setupField(WorldObjectField.ObjectFieldBuilder builder) {
         return builder;
     }
 

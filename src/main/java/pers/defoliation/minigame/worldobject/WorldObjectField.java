@@ -73,15 +73,15 @@ public class WorldObjectField {
         this.setup = setup;
     }
 
-    public static FieldBuilder getBuilder(Object instance) {
-        return new FieldBuilder(instance);
+    public static ObjectFieldBuilder getBuilder(Object instance) {
+        return new ObjectFieldBuilder(instance);
     }
 
-    public static class FieldBuilder {
+    public static class ObjectFieldBuilder {
 
         private List<WorldObjectField> worldObjectFieldList = new ArrayList<>();
 
-        private FieldBuilder(Object instance) {
+        private ObjectFieldBuilder(Object instance) {
             createField(instance, instance.getClass());
         }
 
@@ -98,28 +98,47 @@ public class WorldObjectField {
             createField(instance, clazz.getSuperclass());
         }
 
-        public FieldBuilder setFieldToString(String name, Supplier<String> supplier) {
-            getField(name).ifPresent(worldObjectField -> worldObjectField.field2String = supplier);
-            return this;
+        public FieldBuilder getField(String name) {
+            return new FieldBuilder(name);
         }
 
-        private Optional<WorldObjectField> getField(String name) {
+        private Optional<WorldObjectField> getWorldObjectField(String name) {
             return worldObjectFieldList.stream().filter(worldObjectField -> worldObjectField.name.equals(name)).findAny();
-        }
-
-        public FieldBuilder setRequest(String name, Request request) {
-            getField(name).ifPresent(worldObjectField -> worldObjectField.request = request);
-            return this;
-        }
-
-        public FieldBuilder setIsSetupSupplier(String name, Supplier<Boolean> supplier) {
-            getField(name).ifPresent(worldObjectField -> worldObjectField.setup = supplier);
-            return this;
         }
 
         public List<WorldObjectField> build() {
             return worldObjectFieldList;
         }
+
+        public class FieldBuilder {
+
+            private String name;
+
+            private FieldBuilder(String name) {
+                this.name = name;
+            }
+
+            public FieldBuilder setRequest(Request request) {
+                getWorldObjectField(name).ifPresent(f -> f.request = request);
+                return this;
+            }
+
+            public FieldBuilder setIsSetupSupplier(Supplier<Boolean> supplier) {
+                getWorldObjectField(name).ifPresent(worldObjectField -> worldObjectField.setup = supplier);
+                return this;
+            }
+
+            public FieldBuilder setFieldToString(Supplier<String> supplier) {
+                getWorldObjectField(name).ifPresent(worldObjectField -> worldObjectField.field2String = supplier);
+                return this;
+            }
+
+            public ObjectFieldBuilder fieldDone() {
+                return ObjectFieldBuilder.this;
+            }
+
+        }
+
     }
 
 
