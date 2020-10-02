@@ -32,9 +32,6 @@ public abstract class WorldObject implements RequestWithInfoSupplier {
     }
 
     public WorldObjectField.ObjectFieldBuilder setupField(WorldObjectField.ObjectFieldBuilder builder) {
-        builder.getField("name")
-                .setFieldToString(() -> name)
-                .fieldDone();
         return builder;
     }
 
@@ -88,11 +85,9 @@ public abstract class WorldObject implements RequestWithInfoSupplier {
     }
 
     private BaseComponent field2BaseComponent(WorldObjectField field) {
-        TextComponent textComponent = new TextComponent(field.name);
+        TextComponent textComponent = new TextComponent(field.name + ": ");
         textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/worldobjectclickcommand" + id + ":" + field.fieldName));
         textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Arrays.asList(field.desc).stream().map(m -> new TextComponent(m)).collect(Collectors.toList()).toArray(new BaseComponent[0])));
-        TextComponent textComponent1 = new TextComponent(": ");
-        textComponent.addExtra(textComponent1);
         TextComponent textComponent2 = new TextComponent(field.getFieldToString());
         textComponent2.setColor(field.isSetup() ? ChatColor.GREEN : ChatColor.RED);
         textComponent.addExtra(textComponent2);
