@@ -82,13 +82,20 @@ public class WorldObjectField {
         private List<WorldObjectField> worldObjectFieldList = new ArrayList<>();
 
         private FieldBuilder(Object instance) {
-            for (Field declaredField : instance.getClass().getDeclaredFields()) {
+            createField(instance, instance.getClass());
+        }
+
+        private void createField(Object instance, Class clazz) {
+            if (Object.class.equals(clazz) || clazz == null)
+                return;
+            for (Field declaredField : clazz.getDeclaredFields()) {
                 ObjectField annotation = declaredField.getAnnotation(ObjectField.class);
                 if (annotation != null) {
                     WorldObjectField worldObjectField = new WorldObjectField(declaredField.getName(), annotation.value(), annotation.desc(), new ItemStack(annotation.material().getId(), 1, (short) 0, annotation.materialData()), declaredField, instance);
                     worldObjectFieldList.add(worldObjectField);
                 }
             }
+            createField(instance, clazz.getSuperclass());
         }
 
         public FieldBuilder setFieldToString(String name, Supplier<String> supplier) {
