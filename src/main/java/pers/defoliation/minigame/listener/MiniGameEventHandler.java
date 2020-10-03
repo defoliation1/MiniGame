@@ -14,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -24,6 +25,7 @@ public class MiniGameEventHandler {
     private static HashMap<Class, Function<Event, Player>> event2PlayerMap = new HashMap<>();
 
     private HashMap<String, MiniGameListener> handleMap = new HashMap<>();
+    private AtomicInteger atomicInteger = new AtomicInteger();
 
     private boolean enable = true;
 
@@ -66,6 +68,13 @@ public class MiniGameEventHandler {
         return getFunction(clazz.getSuperclass());
     }
 
+    public <T extends Event> MiniGameEventHandler addHandle(Class<T> event, Consumer<T> consumer) {
+        return addHandle(event, consumer, ignoreCancel());
+    }
+
+    public <T extends Event> MiniGameEventHandler addHandle(Class<T> event, Consumer<T> consumer, Function<T, Boolean> ignore) {
+        return addHandle(String.valueOf(atomicInteger.getAndIncrement()), event, consumer, ignore);
+    }
 
     public <T extends Event> MiniGameEventHandler addHandle(String handleName, Class<T> event, Consumer<T> consumer) {
         return addHandle(handleName, event, consumer, ignoreCancel());
