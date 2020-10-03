@@ -92,7 +92,6 @@ public class WorldObjectField {
             for (Field declaredField : clazz.getDeclaredFields()) {
                 ObjectField annotation = declaredField.getAnnotation(ObjectField.class);
                 if (annotation != null) {
-                    Bukkit.getLogger().info(declaredField.getName());
                     WorldObjectField worldObjectField = new WorldObjectField(declaredField.getName(), annotation.value(), annotation.desc(), new ItemStack(annotation.material().getId(), 1, (short) 0, annotation.materialData()), declaredField, instance);
                     worldObjectFieldList.add(worldObjectField);
                 }

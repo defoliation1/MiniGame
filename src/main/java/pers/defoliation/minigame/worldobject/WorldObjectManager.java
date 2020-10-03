@@ -21,7 +21,6 @@ import pers.defoliation.minigame.ui.RequestWithInfo;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,7 +73,6 @@ public class WorldObjectManager implements RequestWithInfoSupplier, Listener {
                         Bukkit.getLogger().info(file.toString() + " deserialize fail");
                         continue;
                     }
-                    Bukkit.getLogger().info("put " + object.getName());
                     worldObjectHashMap.put(object.getName(), object);
                 } catch (InstantiationException e) {
                     e.printStackTrace();
@@ -98,7 +96,6 @@ public class WorldObjectManager implements RequestWithInfoSupplier, Listener {
             for (WorldObject value : worldObjectHashMap.values()) {
                 if (value.id == id) {
                     for (WorldObjectField worldObjectField : value.getFieldList()) {
-                        Bukkit.getLogger().info(worldObjectField.fieldName+"-"+split[1]);
                         if (worldObjectField.fieldName.equals(split[1])) {
                             Request setupRequest = worldObjectField.getSetupRequest();
                             if (setupRequest != null) {
