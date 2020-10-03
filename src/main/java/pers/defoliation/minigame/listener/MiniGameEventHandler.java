@@ -12,6 +12,7 @@ import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -21,6 +22,8 @@ public class MiniGameEventHandler {
 
     private JavaPlugin plugin;
     private static HashMap<Class, Function<Event, Player>> event2PlayerMap = new HashMap<>();
+
+    private HashMap<String, MiniGameListener> handleMap = new HashMap<>();
 
     private boolean enable = true;
 
@@ -64,18 +67,36 @@ public class MiniGameEventHandler {
     }
 
 
-    public <T extends Event> MiniGameEventHandler addHandle(Class<T> event, Consumer<T> consumer) {
-        return addHandle(event, consumer, ignoreCancel());
+    public <T extends Event> MiniGameEventHandler addHandle(String handleName, Class<T> event, Consumer<T> consumer) {
+        return addHandle(handleName, event, consumer, ignoreCancel());
     }
 
-    public <T extends Event> MiniGameEventHandler addHandle(Class<T> event, Consumer<T> consumer, Function<T, Boolean> ignore) {
-        getEventListeners(event).register(new RegisteredListener(new Listener() {
-        }, (listener, event1) -> {
+    public <T extends Event> MiniGameEventHandler addHandle(String handleName, Class<T> event, Consumer<T> consumer, Function<T, Boolean> ignore) {
+        MiniGameListener instance = new MiniGameListener(event);
+        handleMap.put(handleName, instance);
+        getEventListeners(event).register(new RegisteredListener(instance, (listener, event1) -> {
             if (enable && !ignore.apply((T) event1) && event.isAssignableFrom(event1.getClass())) {
                 acceptEvent(event1, consumer);
             }
         }, EventPriority.NORMAL, plugin, false));
         return this;
+    }
+
+    private class MiniGameListener implements Listener {
+        Class listenerClass;
+
+        public MiniGameListener(Class listenerClass) {
+            this.listenerClass = listenerClass;
+        }
+    }
+
+    public void removeHandle(String handleName) {
+        MiniGameListener remove = this.handleMap.remove(handleName);
+        getEventListeners(remove.listenerClass).unregister(remove);
+    }
+
+    public void removeAll() {
+        new ArrayList<>(handleMap.keySet()).stream().forEach(this::removeHandle);
     }
 
     protected <T extends Event> void acceptEvent(Event event, Consumer<T> consumer) {
