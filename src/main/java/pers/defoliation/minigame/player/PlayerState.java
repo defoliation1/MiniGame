@@ -42,6 +42,8 @@ public class PlayerState {
 
     public static Consumer<Player> clearInventory() {
         return player -> {
+            if(player==null)
+                return;
             player.getInventory().clear();
             player.getInventory().setArmorContents(null);
         };
@@ -49,6 +51,8 @@ public class PlayerState {
 
     public static Consumer<Player> fullState() {
         return player -> {
+            if(player==null)
+                return;
             player.setHealth(player.getMaxHealth());
             player.setFoodLevel(20);
             player.setSaturation(20);
@@ -62,6 +66,7 @@ public class PlayerState {
 
     public static Consumer<Player> clearPotionEffect() {
         return player -> {
+            if(player!=null)
             for (PotionEffect activePotionEffect : player.getActivePotionEffects()) {
                 player.removePotionEffect(activePotionEffect.getType());
             }
@@ -70,6 +75,8 @@ public class PlayerState {
 
     public static Consumer<Player> zeroExp() {
         return player -> {
+            if(player==null)
+                return;
             player.setExp(0);
             player.setLevel(0);
         };
