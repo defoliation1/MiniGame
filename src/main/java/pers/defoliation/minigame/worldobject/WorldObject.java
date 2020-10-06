@@ -74,8 +74,6 @@ public abstract class WorldObject implements RequestWithInfoSupplier {
 
     public List<BaseComponent> getInfo() {
         ArrayList<BaseComponent> list = new ArrayList<>();
-        list.add(new TextComponent("§4§l§m-------------------------------------"));
-        list.add(new TextComponent());
         list.add(new TextComponent("类名: " + getClass().getName()));
         list.add(new TextComponent("主要位置: " + getMainLocation().toVector().toString()));
         for (WorldObjectField worldObjectField : fieldList) {
