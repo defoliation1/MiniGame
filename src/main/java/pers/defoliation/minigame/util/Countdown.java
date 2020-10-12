@@ -20,12 +20,14 @@ public class Countdown<T> {
     private List<BiConsumer<T, AtomicInteger>> perSecondTask = new ArrayList<>();
 
     private HashMap<Integer, BiConsumer<T, AtomicInteger>> secondTask = new HashMap<>();
+    private List<CountdownData> removeList = new ArrayList<>();
 
     private Countdown() {
     }
 
     public void second() {
-        List<CountdownData> removeList = new ArrayList<>();
+        if (!removeList.isEmpty())
+            countdownDataList.removeAll(removeList);
         for (CountdownData countdownData : countdownDataList) {
             if (countdownData.atomicInteger.decrementAndGet() <= 0) {
                 whenEnd.accept(countdownData.t);
@@ -36,8 +38,6 @@ public class Countdown<T> {
                 removeList.add(countdownData);
             }
         }
-        if (!removeList.isEmpty())
-            countdownDataList.removeAll(removeList);
     }
 
     public void start(int countdownTime, T... t) {
@@ -49,7 +49,7 @@ public class Countdown<T> {
     public void cancel(T t) {
         for (CountdownData countdownData : countdownDataList) {
             if (countdownData.t.equals(t)) {
-                countdownDataList.remove(countdownData);
+                removeList.add(countdownData);
                 return;
             }
         }
