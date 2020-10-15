@@ -42,7 +42,7 @@ public class PlayerState {
 
     public static Consumer<Player> clearInventory() {
         return player -> {
-            if(player==null)
+            if (player == null)
                 return;
             player.getInventory().clear();
             player.getInventory().setArmorContents(null);
@@ -51,7 +51,7 @@ public class PlayerState {
 
     public static Consumer<Player> fullState() {
         return player -> {
-            if(player==null)
+            if (player == null)
                 return;
             player.setHealth(player.getMaxHealth());
             player.setFoodLevel(20);
@@ -66,16 +66,16 @@ public class PlayerState {
 
     public static Consumer<Player> clearPotionEffect() {
         return player -> {
-            if(player!=null)
-            for (PotionEffect activePotionEffect : player.getActivePotionEffects()) {
-                player.removePotionEffect(activePotionEffect.getType());
-            }
+            if (player != null)
+                for (PotionEffect activePotionEffect : player.getActivePotionEffects()) {
+                    player.removePotionEffect(activePotionEffect.getType());
+                }
         };
     }
 
     public static Consumer<Player> zeroExp() {
         return player -> {
-            if(player==null)
+            if (player == null)
                 return;
             player.setExp(0);
             player.setLevel(0);
@@ -87,7 +87,8 @@ public class PlayerState {
             if (player == null || !player.isOnline())
                 return;
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                onlinePlayer.hidePlayer(MiniGame.INSTANCE, player);
+                if (onlinePlayer != player)
+                    onlinePlayer.hidePlayer(MiniGame.INSTANCE, player);
             }
         };
     }
@@ -97,7 +98,8 @@ public class PlayerState {
             if (player == null || !player.isOnline())
                 return;
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                onlinePlayer.showPlayer(MiniGame.INSTANCE, player);
+                if (onlinePlayer != player)
+                    onlinePlayer.showPlayer(MiniGame.INSTANCE, player);
             }
         };
     }
