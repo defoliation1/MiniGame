@@ -31,11 +31,9 @@ public class Countdown<T> {
         for (CountdownData countdownData : countdownDataList) {
             if (countdownData.atomicInteger.decrementAndGet() <= 0) {
                 whenEnd.accept(countdownData.t);
+                removeList.add(countdownData);
             } else {
                 perSecondTask.forEach(consumer -> consumer.accept(countdownData.t, countdownData.atomicInteger));
-            }
-            if (countdownData.atomicInteger.get() <= 0) {
-                removeList.add(countdownData);
             }
         }
     }
