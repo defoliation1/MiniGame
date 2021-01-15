@@ -3,6 +3,7 @@ package pers.defoliation.minigame;
 import org.bukkit.plugin.java.JavaPlugin;
 import pers.defoliation.minigame.map.WorldTempManager;
 import pers.defoliation.minigame.state.StateManager;
+import pers.defoliation.minigame.util.CacheUtils;
 
 import java.io.File;
 
@@ -18,6 +19,7 @@ public class MiniGame extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        CacheUtils.initCacheUtils();
         File dataFolder = getDataFolder();
         if (!dataFolder.exists())
             dataFolder.mkdirs();
