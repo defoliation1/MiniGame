@@ -31,6 +31,14 @@ public class WorldTempManager {
         onTempCreate.accept(loadWorld(newWorldName));
     }
 
+    public boolean isMasterWorld(World world, World tempWorld) {
+        String[] split = tempWorld.getName().split("-");
+        if (split.length == 3) {
+            return world.getName().equals(split[1]);
+        }
+        return false;
+    }
+
     private void copyWorld(String worldName, String newLocation, String... ignore) {
         ArrayList<String> ignored = new ArrayList<>(Arrays.asList(ignore));
         for (File file : new File(worldName).listFiles()) {
