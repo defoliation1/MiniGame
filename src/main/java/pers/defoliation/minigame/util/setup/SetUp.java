@@ -5,17 +5,24 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import pers.defoliation.minigame.MiniGame;
+import pers.defoliation.minigame.conversation.Conversation;
 import pers.defoliation.minigame.conversation.request.Request;
+import pers.defoliation.minigame.listener.MiniGameEventHandler;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 public class SetUp {
 
     private static final AtomicLong id = new AtomicLong();
+    private static final Map<Long, FieldRequest> idMap = new HashMap<>();
     private final String title;
     private final Object instance;
     private List<FieldRequest> list = new ArrayList<>();
@@ -33,8 +40,9 @@ public class SetUp {
         Field field = foundField(fieldName);
         if (field != null) {
             FieldName annotation = field.getAnnotation(FieldName.class);
-            FieldRequest fieldRequest = new FieldRequest(fieldName, field, annotation.desc(), request, toString);
+            FieldRequest fieldRequest = new FieldRequest(this, fieldName, field, annotation.desc(), request, toString);
             list.add(fieldRequest);
+            idMap.put(fieldRequest.id, fieldRequest);
         }
     }
 
@@ -63,7 +71,7 @@ public class SetUp {
     private BaseComponent getFieldComponent(FieldRequest fieldRequest) {
         TextComponent textComponent = new TextComponent(fieldRequest.name);
         textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, string2Component(fieldRequest.desc)));
-        textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "setupclickcommand " + fieldRequest.id));
+        textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/setupclickcommand " + fieldRequest.id));
         TextComponent textComponent1 = new TextComponent(": ");
         textComponent.addExtra(textComponent1);
         TextComponent textComponent2 = new TextComponent((String) fieldRequest.toStringFunction.apply(fieldRequest.getValue()));
@@ -82,20 +90,20 @@ public class SetUp {
     private class FieldRequest<T> {
 
         public final long id = SetUp.id.getAndIncrement();
+        public final SetUp setUp;
         public final String name;
         public final Field field;
         public final String[] desc;
         public final Request<T> request;
         public final Function<T, String> toStringFunction;
 
-        public FieldRequest(String name, Field field, String[] desc, Request<T> request, Function<T, String> toStringFunction) {
+        public FieldRequest(SetUp setUp, String name, Field field, String[] desc, Request<T> request, Function<T, String> toStringFunction) {
+            this.setUp = setUp;
             this.name = name;
             this.field = field;
             this.desc = desc;
             this.request = request;
             this.toStringFunction = toStringFunction;
-
-            field.setAccessible(true);
         }
 
         public T getValue() {
@@ -106,6 +114,25 @@ public class SetUp {
             }
             return null;
         }
+    }
+
+    static {
+
+        MiniGameEventHandler miniGameEventHandler = new MiniGameEventHandler(MiniGame.INSTANCE);
+        miniGameEventHandler.addHandle(PlayerCommandPreprocessEvent.class, playerCommandPreprocessEvent -> {
+            String message = playerCommandPreprocessEvent.getMessage().substring(1);
+            String[] s = message.split(" ");
+            if (s.length == 2 && "setupclickcommand".equals(s[0])) {
+                Long id = Long.valueOf(s[1]);
+                if (idMap.containsKey(id)) {
+                    Conversation conversation = new Conversation(MiniGame.INSTANCE);
+                    conversation.addRequest(idMap.get(id).request);
+                    conversation.start(playerCommandPreprocessEvent.getPlayer());
+                    conversation.setOnComplete(conversation1 -> idMap.get(id).setUp.sendSetUpMessage(conversation1.getPlayer()));
+                }
+            }
+        });
+
     }
 
 }
