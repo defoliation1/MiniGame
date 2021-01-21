@@ -31,6 +31,10 @@ public class WorldTempManager {
         onTempCreate.accept(loadWorld(newWorldName));
     }
 
+    public boolean isTempWorld(World world) {
+        return world.getName().startsWith("temp-");
+    }
+
     public boolean isMasterWorld(World world, World tempWorld) {
         String[] split = tempWorld.getName().split("-");
         if (split.length == 3) {

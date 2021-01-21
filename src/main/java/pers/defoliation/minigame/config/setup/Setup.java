@@ -9,6 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import pers.defoliation.minigame.MiniGame;
 import pers.defoliation.minigame.conversation.Conversation;
 import pers.defoliation.minigame.conversation.request.Request;
+import pers.defoliation.minigame.conversation.request.RequestNone;
 import pers.defoliation.minigame.ui.Slot;
 import pers.defoliation.minigame.ui.UI;
 
@@ -83,16 +84,22 @@ public class Setup {
         return "";
     }
 
+    @Deprecated
     public Setup addConfig(String name, Supplier<SetupState> setupState, Request onClick) {
         return addConfig(name, () -> defaultLore, setupState, onClick);
     }
 
+    @Deprecated
     public Setup addConfig(String name, Supplier<List<String>> lore, Supplier<SetupState> state, Request onClick) {
-        if (list.stream().filter(setupWrapper -> setupWrapper.name.equals(name)).findAny().isPresent()) {
+        if (list.stream().anyMatch(setupWrapper -> setupWrapper.name.equals(name))) {
             throw new IllegalArgumentException("配置项: " + name + " 已存在,不可重复添加");
         }
         list.add(new SetupWrapper(name, lore, state, onClick));
         return this;
+    }
+
+    public ConfigBuilder addConfig(String name) {
+        return new ConfigBuilder(name);
     }
 
     public void removeConfig(String name) {
@@ -104,9 +111,53 @@ public class Setup {
         }
     }
 
+    public class ConfigBuilder {
+
+        private final String name;
+        private Material item;
+        private Supplier<List<String>> loreSupplier = () -> defaultLore;
+        private Supplier<SetupState> stateSupplier = () -> SetupState.COMPLETE;
+        private Request request = RequestNone.newRequestPlayer(r -> {
+        });
+
+        public ConfigBuilder(String name) {
+            this.name = name;
+        }
+
+        public ConfigBuilder setItem(Material item) {
+            this.item = item;
+            return this;
+        }
+
+        public ConfigBuilder setSingleLoreSupplier(Supplier<String> loreSupplier) {
+            this.loreSupplier = () -> Collections.singletonList(loreSupplier.get());
+            return this;
+        }
+
+        public ConfigBuilder setLoreSupplier(Supplier<List<String>> loreSupplier) {
+            this.loreSupplier = loreSupplier;
+            return this;
+        }
+
+        public ConfigBuilder setStateSupplier(Supplier<SetupState> stateSupplier) {
+            this.stateSupplier = stateSupplier;
+            return this;
+        }
+
+        public ConfigBuilder setRequest(Request request) {
+            this.request = request;
+            return this;
+        }
+
+        public Setup build() {
+
+            return Setup.this;
+        }
+    }
+
     private class SetupWrapper {
         String name;
-        int itemId;
+        Material item;
         Supplier<List<String>> lore;
         Supplier<SetupState> stateSupplier;
         Request onClick;
@@ -124,17 +175,16 @@ public class Setup {
             while (!Material.getMaterial(id).isItem()) {
                 id = atomicInteger.getAndIncrement();
             }
-            itemId = id;
+            item = Material.getMaterial(id);
         }
 
         public ItemStack getItem() {
-            ItemStack itemStack = new ItemStack(itemId);
+            ItemStack itemStack = new ItemStack(item);
             ItemMeta itemMeta = itemStack.getItemMeta();
             itemMeta.setDisplayName(getStateColor(stateSupplier.get()) + name);
-            List<String> lore = new ArrayList<>();
-            lore.addAll(this.lore.get());
+            List<String> lore = new ArrayList<>(this.lore.get());
             lore.add(" ");
-            lore.add("名字为§4红,意为还未设置，名字为§a绿，则为已设置");
+            lore.add("名字为§4红§r,意为还未设置，名字为§a绿§r，则为已设置");
             lore.add("已设置的配置项可点击并重新设置");
             itemMeta.setLore(lore);
             itemStack.setItemMeta(itemMeta);

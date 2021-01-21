@@ -19,6 +19,8 @@ public class StateManager {
 
     private static List<Object> removeValue = new ArrayList<>();
 
+    private StateManager(){}
+
     static {
         Bukkit.getScheduler().runTaskTimer(MiniGame.INSTANCE, () -> {
             list.removeIf(instanceWrapper -> removeValue.contains(instanceWrapper.instance));
