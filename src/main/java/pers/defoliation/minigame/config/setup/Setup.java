@@ -150,7 +150,9 @@ public class Setup {
         }
 
         public Setup build() {
-
+            SetupWrapper setupWrapper = new SetupWrapper(name, loreSupplier, stateSupplier, request);
+            setupWrapper.item = item;
+            list.add(setupWrapper);
             return Setup.this;
         }
     }
