@@ -184,7 +184,13 @@ public class Setup {
             ItemStack itemStack = new ItemStack(item);
             ItemMeta itemMeta = itemStack.getItemMeta();
             itemMeta.setDisplayName(getStateColor(stateSupplier.get()) + name);
-            List<String> lore = new ArrayList<>(this.lore.get());
+            List<String> lore = new ArrayList<>();
+            try {
+                lore.addAll(this.lore.get());
+            } catch (Exception e) {
+                lore.add("获取Lore时出现异常，异常项目: " + name + " 异常: " + e.getMessage());
+                e.printStackTrace();
+            }
             lore.add(" ");
             lore.add("名字为§4红§r,意为还未设置，名字为§a绿§r，则为已设置");
             lore.add("已设置的配置项可点击并重新设置");
