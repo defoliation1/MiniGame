@@ -188,7 +188,7 @@ public class Setup {
             try {
                 lore.addAll(this.lore.get());
             } catch (Exception e) {
-                lore.add("获取Lore时出现异常，异常项目: " + name + " 异常: " + e.getMessage());
+                lore.add("获取Lore时出现异常，异常项目: " + name + " 异常: " + e.toString());
                 e.printStackTrace();
             }
             lore.add(" ");
