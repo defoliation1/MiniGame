@@ -5,7 +5,6 @@ import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.scheduler.BukkitTask;
 import pers.defoliation.minigame.MiniGame;
 
 import java.util.ArrayList;
@@ -23,7 +22,6 @@ public class WorldTempManager {
 
     private AtomicInteger atomicInteger = new AtomicInteger();
 
-    private BukkitTask task;
     private HashMap<String, Consumer<World>> createTask = new HashMap<>();
 
     public WorldTempManager() {
@@ -40,11 +38,12 @@ public class WorldTempManager {
                 mvWorldManager.deleteWorld(multiverseWorld.getName(), true, true);
             }
         });
-        task = Bukkit.getScheduler().runTaskTimer(MiniGame.INSTANCE, () -> {
+        Bukkit.getScheduler().runTaskTimer(MiniGame.INSTANCE, () -> {
             List<String> remove = new ArrayList<>();
             for (Map.Entry<String, Consumer<World>> stringConsumerEntry : createTask.entrySet()) {
-                if (mvWorldManager.isMVWorld(stringConsumerEntry.getKey())) {
-                    stringConsumerEntry.getValue().accept(mvWorldManager.getMVWorld(stringConsumerEntry.getKey()).getCBWorld());
+                World world = Bukkit.getWorld(stringConsumerEntry.getKey());
+                if (world != null) {
+                    stringConsumerEntry.getValue().accept(world);
                     remove.add(stringConsumerEntry.getKey());
                 }
             }
