@@ -1,3 +1,5 @@
 main: pers.defoliation.minigame.MiniGame
 name: MiniGame
 version: ${version}
+softdepend:
+  - Multiverse-Core

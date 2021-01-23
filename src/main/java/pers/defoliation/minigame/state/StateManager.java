@@ -120,6 +120,7 @@ public class StateManager {
                 changeOut(this.state);
                 changeIn(gameState);
             }
+            setStateField();
             this.state = gameState;
         }
 

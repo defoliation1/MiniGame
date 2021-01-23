@@ -1,13 +1,17 @@
 package pers.defoliation.minigame.map;
 
+import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.MultiverseCore.api.MVWorldManager;
+import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.WorldCreator;
+import org.bukkit.scheduler.BukkitTask;
 import pers.defoliation.minigame.MiniGame;
 
-import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -15,20 +19,45 @@ public class WorldTempManager {
 
     public static final WorldTempManager INSTANCE = new WorldTempManager();
 
+    private MVWorldManager mvWorldManager;
+
     private AtomicInteger atomicInteger = new AtomicInteger();
 
+    private BukkitTask task;
+    private HashMap<String, Consumer<World>> createTask = new HashMap<>();
+
     public WorldTempManager() {
-        for (File file : new File(System.getProperty("user.dir")).listFiles()) {
-            if (file.getName().startsWith("temp-")) {
-                Bukkit.getScheduler().runTask(MiniGame.INSTANCE, () -> deleteWorld(file.getName(), true));
+        MultiverseCore plugin = (MultiverseCore) Bukkit.getPluginManager().getPlugin("Multiverse-Core");
+        mvWorldManager = plugin.getMVWorldManager();
+        Bukkit.getScheduler().runTask(MiniGame.INSTANCE, () -> {
+            List<MultiverseWorld> removeWorld = new ArrayList<>();
+            for (MultiverseWorld mvWorld : mvWorldManager.getMVWorlds()) {
+                if (mvWorld.getName().startsWith("temp-")) {
+                    removeWorld.add(mvWorld);
+                }
             }
-        }
+            for (MultiverseWorld multiverseWorld : removeWorld) {
+                mvWorldManager.deleteWorld(multiverseWorld.getName(), true, true);
+            }
+        });
+        task = Bukkit.getScheduler().runTaskTimer(MiniGame.INSTANCE, () -> {
+            List<String> remove = new ArrayList<>();
+            for (Map.Entry<String, Consumer<World>> stringConsumerEntry : createTask.entrySet()) {
+                if (mvWorldManager.isMVWorld(stringConsumerEntry.getKey())) {
+                    stringConsumerEntry.getValue().accept(mvWorldManager.getMVWorld(stringConsumerEntry.getKey()).getCBWorld());
+                    remove.add(stringConsumerEntry.getKey());
+                }
+            }
+            remove.forEach(createTask::remove);
+        }, 10, 10);
     }
 
     public void createTemp(World copyWorld, Consumer<World> onTempCreate) {
         String newWorldName = "temp-" + copyWorld.getName() + "-" + atomicInteger.incrementAndGet();
-        copyWorld(copyWorld.getName(), newWorldName, "uid.dat");
-        onTempCreate.accept(loadWorld(newWorldName));
+        if (!mvWorldManager.cloneWorld(copyWorld.getName(), newWorldName)) {
+            mvWorldManager.loadWorld(newWorldName);
+        }
+        createTask.put(newWorldName, onTempCreate);
     }
 
     public boolean isTempWorld(World world) {
@@ -43,61 +72,8 @@ public class WorldTempManager {
         return false;
     }
 
-    private void copyWorld(String worldName, String newLocation, String... ignore) {
-        ArrayList<String> ignored = new ArrayList<>(Arrays.asList(ignore));
-        for (File file : new File(worldName).listFiles()) {
-            if (!ignored.contains(file.getName())) {
-                if (file.isDirectory()) {
-                    new File(newLocation + "\\" + file.getName()).mkdirs();
-                    copyWorld(worldName + "\\" + file.getName(), newLocation + "\\" + file.getName() + "\\", ignore);
-                } else {
-                    try {
-                        InputStream in = new FileInputStream(file.getAbsolutePath());
-                        OutputStream out = new FileOutputStream(newLocation.endsWith("\\")
-                                ? newLocation + file.getName() : newLocation + "\\" + file.getName());
-                        byte[] buffer = new byte[1024];
-                        int length;
-                        while ((length = in.read(buffer)) > 0)
-                            out.write(buffer, 0, length);
-                        in.close();
-                        out.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
-
-    public boolean deleteWorld(String worldName, boolean loaded) {
-        if (loaded) {
-            unloadWorld(worldName);
-        }
-        File path = new File(worldName);
-        if (path.exists()) {
-            for (File file : path.listFiles()) {
-                if (file.isDirectory()) {
-                    deleteWorld(worldName + "\\" + file.getName(), false);
-                } else {
-                    file.delete();
-                }
-            }
-        }
-        return (path.delete());
-    }
-
-    public boolean unloadWorld(String worldName) {
-        if (Bukkit.getWorld(worldName) != null) {
-            Bukkit.getServer().unloadWorld(Bukkit.getWorld(worldName), true);
-            return true;
-        }
-        return false;
-    }
-
-    public World loadWorld(String worldName) {
-        WorldCreator worldCreater = new WorldCreator(worldName);
-        Bukkit.getServer().createWorld(worldCreater);
-        return Bukkit.getWorld(worldName);
+    public void deleteWorld(String worldName, boolean loaded) {
+        mvWorldManager.deleteWorld(worldName, true, true);
     }
 
     public static void init() {
