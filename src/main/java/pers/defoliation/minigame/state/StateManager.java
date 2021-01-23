@@ -19,7 +19,8 @@ public class StateManager {
 
     private static List<Object> removeValue = new ArrayList<>();
 
-    private StateManager(){}
+    private StateManager() {
+    }
 
     static {
         Bukkit.getScheduler().runTaskTimer(MiniGame.INSTANCE, () -> {
@@ -103,11 +104,12 @@ public class StateManager {
                     changeOutMap.put(changeOut.value().name(), method);
                 }
             }
-            for (Field field : instance.getClass().getFields()) {
-                if (field.getDeclaringClass().equals(anEnum.getClass())) {
+            for (Field field : instance.getClass().getDeclaredFields()) {
+                if (field.getType().equals(GameState.class)) {
                     State annotation = field.getAnnotation(State.class);
                     if (annotation != null) {
                         stateField = field;
+                        stateField.setAccessible(true);
                         setStateField();
                         return;
                     }
