@@ -67,6 +67,16 @@ public abstract class Team {
         return players;
     }
 
+    public List<Player> getOnlinePlayers(){
+        ArrayList<Player> players = new ArrayList<>();
+        for (GamePlayer player : this.players) {
+            if (player.isOnline()) {
+                players.add(player.getPlayer());
+            }
+        }
+        return players;
+    }
+
     public int getAlivePlayerNum() {
         int i = 0;
         for (GamePlayer player : this.players) {
