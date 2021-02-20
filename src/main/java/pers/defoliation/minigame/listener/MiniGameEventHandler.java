@@ -72,6 +72,10 @@ public class MiniGameEventHandler {
         return addHandle(event, consumer, ignoreCancel());
     }
 
+    public <T extends Event> MiniGameEventHandler addHandle(Class<T> event, Consumer<T> consumer, EventPriority priority) {
+        return addHandle(String.valueOf(atomicInteger.getAndIncrement()), event, consumer, ignoreCancel(), priority);
+    }
+
     public <T extends Event> MiniGameEventHandler addHandle(Class<T> event, Consumer<T> consumer, Function<T, Boolean> ignore) {
         return addHandle(String.valueOf(atomicInteger.getAndIncrement()), event, consumer, ignore);
     }
@@ -81,13 +85,18 @@ public class MiniGameEventHandler {
     }
 
     public <T extends Event> MiniGameEventHandler addHandle(String handleName, Class<T> event, Consumer<T> consumer, Function<T, Boolean> ignore) {
+        addHandle(handleName, event, consumer, ignore, EventPriority.NORMAL);
+        return this;
+    }
+
+    public <T extends Event> MiniGameEventHandler addHandle(String handleName, Class<T> event, Consumer<T> consumer, Function<T, Boolean> ignore, EventPriority priority) {
         MiniGameListener instance = new MiniGameListener(event);
         handleMap.put(handleName, instance);
         getEventListeners(event).register(new RegisteredListener(instance, (listener, event1) -> {
             if (enable && !ignore.apply((T) event1) && event.isAssignableFrom(event1.getClass())) {
                 acceptEvent(event1, consumer);
             }
-        }, EventPriority.NORMAL, plugin, false));
+        }, priority, plugin, false));
         return this;
     }
 

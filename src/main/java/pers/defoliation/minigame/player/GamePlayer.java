@@ -5,12 +5,14 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import pers.defoliation.minigame.game.Game;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class GamePlayer {
 
-    private static final HashMap<String, GamePlayer> map = new HashMap<>();
+    private static final Map<String, GamePlayer> map = Collections.synchronizedMap(new HashMap<>());
 
     private String playerName;
 
@@ -44,7 +46,7 @@ public class GamePlayer {
     }
 
     public static GamePlayer getGamePlayer(String playerName) {
-        return map.computeIfAbsent(playerName, key -> new GamePlayer(key));
+        return map.computeIfAbsent(playerName, GamePlayer::new);
     }
 
     public static GamePlayer getGamePlayer(OfflinePlayer player) {
