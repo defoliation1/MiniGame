@@ -64,9 +64,9 @@ public class WorldTempManager {
     }
 
     public boolean isMasterWorld(World world, World tempWorld) {
-        String[] split = tempWorld.getName().split("-");
-        if (split.length == 3) {
-            return world.getName().equals(split[1]);
+        String name = tempWorld.getName();
+        if (name.length() > 5) {
+            return name.substring(5).startsWith(world.getName());
         }
         return false;
     }

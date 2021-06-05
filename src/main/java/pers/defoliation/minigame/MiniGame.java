@@ -1,8 +1,11 @@
 package pers.defoliation.minigame;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import pers.defoliation.minigame.area.Area;
+import pers.defoliation.minigame.area.AreaDataContainer;
 import pers.defoliation.minigame.map.WorldTempManager;
 import pers.defoliation.minigame.state.StateManager;
 import pers.defoliation.minigame.util.CacheUtils;
@@ -29,5 +32,7 @@ public class MiniGame extends JavaPlugin {
         Plugin plugin = Bukkit.getPluginManager().getPlugin("Multiverse-Core");
         if (plugin != null)
             WorldTempManager.init();
+        ConfigurationSerialization.registerClass(Area.class);
+        ConfigurationSerialization.registerClass(AreaDataContainer.class);
     }
 }

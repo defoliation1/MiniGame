@@ -77,6 +77,14 @@ public abstract class GamePlayerGroup<T extends Team> {
         return teamPlayers;
     }
 
+    public List<Player> getOnlinePlayers(){
+        List<Player> teamPlayers = new ArrayList<>();
+        for (Team team : teams) {
+            teamPlayers.addAll(team.getOnlinePlayers());
+        }
+        return teamPlayers;
+    }
+
     public List<GamePlayer> getEffectPlayers() {
         return getPlayers().stream().filter(GamePlayer::isEffective).collect(Collectors.toList());
     }
