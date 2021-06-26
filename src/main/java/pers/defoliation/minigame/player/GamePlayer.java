@@ -3,6 +3,7 @@ package pers.defoliation.minigame.player;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import pers.defoliation.minigame.game.AbstractGame;
 import pers.defoliation.minigame.game.Game;
 
 import java.util.Collections;
@@ -14,9 +15,9 @@ public class GamePlayer {
 
     private static final Map<String, GamePlayer> map = Collections.synchronizedMap(new HashMap<>());
 
-    private String playerName;
+    private final String playerName;
 
-    private Game game;
+    private AbstractGame game;
     private boolean isSpectator;
 
     private HashMap<String, Object> playerData = new HashMap<>();
@@ -37,11 +38,11 @@ public class GamePlayer {
         return Bukkit.getPlayer(playerName);
     }
 
-    public Game playingGame() {
+    public AbstractGame playingGame() {
         return game;
     }
 
-    public void setPlayingGame(Game game) {
+    public void setPlayingGame(AbstractGame game) {
         this.game = game;
     }
 

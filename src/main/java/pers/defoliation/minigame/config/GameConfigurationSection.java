@@ -30,12 +30,12 @@ public class GameConfigurationSection implements ConfigurationSection {
         return section;
     }
 
-    public GameConfigurationSection request(String key, Function<Consumer<?>, Request<?>> function) {
+    public GameConfigurationSection request(String key, Function<Consumer<Object>, Request<?>> function) {
         requestMap.put(key, new RequestWrapper(function, notEmpty()));
         return this;
     }
 
-    public GameConfigurationSection request(String key, Function<Consumer<?>, Request<?>> function, Function<Object, Boolean> isComplete) {
+    public GameConfigurationSection request(String key, Function<Consumer<Object>, Request<?>> function, Function<Object, Boolean> isComplete) {
         requestMap.put(key, new RequestWrapper(function, isComplete));
         return this;
     }
@@ -45,10 +45,10 @@ public class GameConfigurationSection implements ConfigurationSection {
     }
 
     private class RequestWrapper {
-        Function<Consumer<?>, Request<?>> function;
+        Function<Consumer<Object>, Request<?>> function;
         Function<Object, Boolean> isComplete;
 
-        public RequestWrapper(Function<Consumer<?>, Request<?>> function, Function<Object, Boolean> isComplete) {
+        public RequestWrapper(Function<Consumer<Object>, Request<?>> function, Function<Object, Boolean> isComplete) {
             this.function = function;
             this.isComplete = isComplete;
         }

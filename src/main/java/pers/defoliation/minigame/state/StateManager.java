@@ -83,7 +83,6 @@ public class StateManager {
         GameState state;
 
         public InstanceWrapper(GameState anEnum, Object instance) {
-            state = anEnum;
             this.instance = instance;
             Class<?> aClass = instance.getClass();
             for (GameState enumConstant : GameState.values()) {
@@ -115,11 +114,14 @@ public class StateManager {
                     }
                 }
             }
+            changeState(anEnum);
         }
 
         private void changeState(GameState gameState) {
             if (this.state != gameState) {
-                changeOut(this.state);
+                if (this.state != null) {
+                    changeOut(this.state);
+                }
                 changeIn(gameState);
             }
             this.state = gameState;

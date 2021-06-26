@@ -84,6 +84,10 @@ public class MiniGameEventHandler {
         return addHandle(handleName, event, consumer, ignoreCancel());
     }
 
+    public <T extends Event> MiniGameEventHandler addHandle(String handleName, Class<T> event, Consumer<T> consumer, EventPriority priority) {
+        return addHandle(handleName, event, consumer, ignoreCancel(), priority);
+    }
+
     public <T extends Event> MiniGameEventHandler addHandle(String handleName, Class<T> event, Consumer<T> consumer, Function<T, Boolean> ignore) {
         addHandle(handleName, event, consumer, ignore, EventPriority.NORMAL);
         return this;
@@ -110,7 +114,9 @@ public class MiniGameEventHandler {
 
     public void removeHandle(String handleName) {
         MiniGameListener remove = this.handleMap.remove(handleName);
-        getEventListeners(remove.listenerClass).unregister(remove);
+        if (remove != null) {
+            getEventListeners(remove.listenerClass).unregister(remove);
+        }
     }
 
     public void removeAll() {

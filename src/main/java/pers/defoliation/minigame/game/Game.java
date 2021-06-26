@@ -10,20 +10,18 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class Game {
+@Deprecated
+public abstract class Game extends AbstractGame{
 
-    private String gameName;
+    private final String gameName;
     private GameConfigurationSection config;
 
     //在游戏中产生的数据，用于scoreboard等
     private HashMap<String, Object> gameData = new HashMap<>();
 
     public Game(String gameName) {
+        super(gameName);
         this.gameName = gameName;
-    }
-
-    public String getGameName() {
-        return gameName;
     }
 
     public GameConfigurationSection getGameConfig() {
@@ -37,9 +35,7 @@ public abstract class Game {
     public void loadConfig() {
         try {
             ((YamlConfiguration) config.getSection()).load(getGameConfigFile());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvalidConfigurationException e) {
+        } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
     }

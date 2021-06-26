@@ -2,6 +2,7 @@ package pers.defoliation.minigame.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+@Deprecated
 public class Countdown<T> {
 
     private List<CountdownData> countdownDataList = new ArrayList<>();
@@ -21,6 +23,8 @@ public class Countdown<T> {
 
     private HashMap<Integer, BiConsumer<T, AtomicInteger>> secondTask = new HashMap<>();
     private List<CountdownData> removeList = new ArrayList<>();
+
+    private BukkitTask task;
 
     private Countdown() {
     }
@@ -57,6 +61,15 @@ public class Countdown<T> {
         for (T t : collection) {
             countdownDataList.add(new CountdownData(countdownTime, t));
         }
+    }
+
+    public void clear(){
+        countdownDataList.clear();
+        removeList.clear();
+    }
+
+    public void unload() {
+        task.cancel();
     }
 
     private class CountdownData {
@@ -103,7 +116,8 @@ public class Countdown<T> {
         }
 
         public Countdown<T> build() {
-            Bukkit.getScheduler().runTaskTimer(plugin, () -> countdown.second(), 20, 20);
+            BukkitTask bukkitTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> countdown.second(), 20, 20);
+            countdown.task = bukkitTask;
             return countdown;
         }
 
